@@ -4,6 +4,7 @@
  */
 package compression;
 
+import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -16,42 +17,52 @@ import static org.junit.Assert.*;
  * @author hamppis
  */
 public class AuxiliaryMethodsTest {
-    
+
     public AuxiliaryMethodsTest() {
     }
-  
 
     /**
      * Test of bgrIntegerToColor method, of class AuxiliaryMethods.
      */
     @Test
     public void testBgrIntegerToColor() {
-        byte b = 1;
-        int i = 1;
-        byte result = AuxiliaryMethods.bgrIntegerToColor(i,0);
-        assertEquals("Number 1 should transform into 1 (when the color's blue). ",b,result);
-        
-        for (int j = 1; j < 256; j++) {
-            byte blue = AuxiliaryMethods.bgrIntegerToColor(j, 0);
-            assertTrue("Numbers 1-255 should have nonzero blue component", blue != 0);
-            
-            byte green = AuxiliaryMethods.bgrIntegerToColor(j, 1);
-            assertTrue("Numbers 1-255 should have zero green component", green == 0);
-            
-            byte red = AuxiliaryMethods.bgrIntegerToColor(j, 2);
-            assertTrue("Numbers 1-255 should have zero red component", red == 0);
+
+        // Test that the color will be extracted:
+        byte extracted;
+        int composite;
+        for (int color = 0; color < 3; color++) {
+            for (int i = 0; i < 256; i++) {
+                composite = i << (8 * color);
+                extracted = AuxiliaryMethods.bgrIntegerToColor(composite, color);
+                assertTrue("Color not extracted", extracted != 0 || i == 128);
+            }
         }
-        
-        for (int j = 0; j < 255; j++) {
-            int a = j << 8;
-            byte blue = AuxiliaryMethods.bgrIntegerToColor(a, 0);
-            assertTrue("Numbers 0-255<<8 should have zero blue component", blue == 0);
-            
-            byte green = AuxiliaryMethods.bgrIntegerToColor(a, 1);
-            assertTrue("Numbers 0-255<<8 should have nonzero green component", green != 0);
-            
-            byte red = AuxiliaryMethods.bgrIntegerToColor(a, 2);
-            assertTrue("Numbers 0-255<<8 should have zero red component", red == 0);
+
+        // Test that single basic color won't spill into other basic colors.
+        for (int color = 0; color < 3; color++) {
+            for (int i = 0; i < 256; i++) {
+                composite = i << (8 * color);
+                for (int otherColor = 0; otherColor < 3; otherColor++) {
+                    if (otherColor == color) {
+                        ;
+                    } else {
+                        extracted = AuxiliaryMethods.bgrIntegerToColor(composite, otherColor);
+                        assertTrue("Basic colors mix", extracted == - 128); // - 128 ~ 0 shade of the color.
+                    }
+                }
+            }
+        }
+
+
+        // Test that the shades will come in the correct order (-128,....,127)
+        for (int color = 0; color < 3; color++) {
+            int previous = -129;
+            for (int i = 0; i < 256; i++) {
+                composite = i << (8 * color);
+                extracted = AuxiliaryMethods.bgrIntegerToColor(composite, color);
+                assertTrue("Shades in wrong order. Color: " + color + " shade: " + extracted, extracted - previous == 1);
+                previous = extracted;
+            }
         }
     }
 
@@ -60,5 +71,100 @@ public class AuxiliaryMethodsTest {
      */
     @Test
     public void testColorsToBgrInteger() {
+
+        // Test that single basic color results an integer whose noncorresponding
+        // bytes are zero:
+
+        byte[] data = new byte[3];
+        int mask;   // a bitmask to disregard the color that should be present in 
+        // the integer.
+        for (int color = 0; color < 3; color++) {
+            // set the other colors to the shade zero (-128 in byte language):
+            // create the bitmask
+            mask = 0;
+            for (int i = 0; i < 3; i++) {
+                if (i != color) {
+                    data[i] = -128;
+                    mask += 0xFF << (i * 8);
+                }
+            }
+            // Set the color to different shades:
+            for (int i = -128; i < 128; i++) {
+                data[color] = (byte) i;
+                int composite = AuxiliaryMethods.colorsToBgrInteger(data);
+                composite = composite & mask;
+                assertTrue("Some basic color spills into other colors", composite == 0);
+            }
+        }
+
+
+        // Test that nonzero shades will become nonzero shades:
+        for (int color = 0; color < 3; color++) {
+            for (int i = 0; i < 3; i++) {
+                data[i] = -128; // set the shades to zero
+            }
+
+            for (int i = -127; i < 128; i++) {
+                data[color] = (byte) i;
+                int composite = AuxiliaryMethods.colorsToBgrInteger(data);
+                assertTrue("Some color results a 'zero color'.", composite != 0);
+            }
+        }
+    }
+
+    @Test
+    public void testFromIntegerToByteAndBack() {
+        int original, result;
+        byte[] byteData = new byte[3];
+
+        // Test 1000 biggest values:
+
+        for (int i = 0; i < 1000; i++) {
+            original = 0xFF0000 - i;
+            for (int color = 0; color < 3; color++) {
+                byteData[color] = AuxiliaryMethods.bgrIntegerToColor(original, color);
+            }
+            result = AuxiliaryMethods.colorsToBgrInteger(byteData);
+
+            assertTrue("Value " + Integer.toHexString(original) + " doesn't map right int->byte->int", result == original);
+        }
+
+        // Test 1000 smallest values:
+
+        for (int i = 0; i < 1000; i++) {
+            original = i;
+            for (int color = 0; color < 3; color++) {
+                byteData[color] = AuxiliaryMethods.bgrIntegerToColor(original, color);
+            }
+            result = AuxiliaryMethods.colorsToBgrInteger(byteData);
+
+            assertTrue("Value " + Integer.toHexString(original) + " doesn't map right int->byte->int", result == original);
+        }
+        
+        // Test 1000 random numbers:
+        Random random = new Random();
+        for (int i = 0; i < 1000; i++) {
+            original = random.nextInt(0x1000000);
+            for (int color = 0; color < 3; color++) {
+                byteData[color] = AuxiliaryMethods.bgrIntegerToColor(original, color);
+            }
+            result = AuxiliaryMethods.colorsToBgrInteger(byteData);
+
+            assertTrue("Value " + Integer.toHexString(original) + " doesn't map right int->byte->int", result == original);
+        }
+        
+        
+        // Test 1000 random numbers with the possibility of extra information
+        // that has to be lost:
+        int mask = 0xFFFFFF;
+        for (int i = 0; i < 1000; i++) {
+            original = random.nextInt();
+            for (int color = 0; color < 3; color++) {
+                byteData[color] = AuxiliaryMethods.bgrIntegerToColor(original, color);
+            }
+            result = AuxiliaryMethods.colorsToBgrInteger(byteData);
+
+            assertTrue("Value " + Integer.toHexString(original) + " doesn't map right int->byte->int", result == (mask & original));
+        }
     }
 }

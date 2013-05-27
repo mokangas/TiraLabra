@@ -14,20 +14,28 @@ public class AuxiliaryMethods {
      * This class contains common auxiliary methods that can be used in any other class.
      */
     
-       /**
-     * Extracts one basic color from an integer of form (0,r,g,b), that is:
-     * the last byte in the integer describes the blue color,
-     * the third byte is green and the second red.
+    /**
+     * Extracts shade of a basic color from the composite integer describing a pixel.
+     * The integer must be of form (0,r,g,b), that is: the first byte is meaningless,
+     * the second describes the share of red, the third the shade of green and the last
+     * one the shade of blue. To preserve the order and distance of the shades 128 is
+     * subtracted from the returning value. (Otherwise shades 127 and 128 for example
+     * would result 127 and -128 respectively.
      * @param rgbInt The integer describing the color.
      * @param color The color to be extracted (BLUE = 0, Green = 1, RED = 2)
-     * @return The shade of the color.
+     * @return The shade of the color - 128.
      */
     public static byte bgrIntegerToColor(int rgbInt, int color){
-        return (byte) (rgbInt >> (8 * color)) ;
+        rgbInt = rgbInt >> (8 * color) ; // shift the relevant bits to the end
+        rgbInt = rgbInt & 0XFF;          // ignore all the other bits
+        rgbInt = rgbInt - 128;           // so that casting into bytes doesn't break distances
+        return (byte) rgbInt;
     }
     
      /**
-     * Combines the shades of the three basic colors into an integer.
+     * Combines the shades of the three basic colors into a single integer. This 
+     * corresponds to the method bgrIntegerToColor, and thus values -128,...,127
+     * of data correspond to the shades 0,...,255 of the color.
      * @param data The shades of the three basic colors that will be combined. 
      * data[0] = blue, data[1] = green and data[2] = red.
      * @return An integer in the form (0,r,g,b). That is, the first byte is empty,
@@ -37,15 +45,10 @@ public class AuxiliaryMethods {
     public static int colorsToBgrInteger(byte[] data){
         
         int bgrInteger = 0;
-        int a;
         
-        for (int color = 0; color < NO_OF_COLORS ; color++) {
-            if (data[color] > 0) {
-                a = (int) data[color];
-            } else {
-                a = 256 + (int) data[color];
-            }
-            bgrInteger +=  a << ( 8 * color) ;
+        for (int c = 0; c < NO_OF_COLORS ; c++) {
+            int color = ((int) data[c]) + 128;
+            bgrInteger +=  color << ( 8 * c) ;
         }
         
         return bgrInteger;

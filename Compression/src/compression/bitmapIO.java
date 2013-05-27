@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class bitmapIO {
+public class BitmapIO {
 
     private static final int BLUE = 0;
     private static final int GREEN = 1;
@@ -13,16 +13,18 @@ public class bitmapIO {
     private static final int NO_OF_COLORS = 3;
 
     /**
-     * Extracts color information into an array where each of the colors blue,
-     * green and red are represented separately.
-     *
-     * @param image The image to be read.
-     * @return An array of the colors. Array[i][x][y] tells what is the shade of
-     * color i in the coordinates (x,y) of the picture. Colors are (BLUE = 0,
-     * GREEN = 1 and RED = 2)-
+     * Reads a given bmp-file into data of it's pixels in the form
+     * data[c][x][y], where (x,y) tells the location of the pixel in the bitmap and
+     * c specifies which basic color's shade is stored in the byte (0= blue,
+     * 1 = green and 2 = red). For example data[1][0][0] tells the shade of green of
+     * the upper left corner of the image.
+     * @param file The file to be read. Must be .bmp.
+     * @return the color data.
+     * @throws IOException 
      */
-    private byte[][][] extractBGRdata(BufferedImage image) {
-
+    public static byte[][][] readFileIntoByteData(File file) throws IOException{
+        
+        BufferedImage image = ImageIO.read(file);
         byte[][][] bgrData = new byte[NO_OF_COLORS][image.getWidth()][image.getHeight()];
 
         for (int y = 0; y < image.getHeight(); y++) {
@@ -37,20 +39,19 @@ public class bitmapIO {
     }
 
     /**
-     * Combines data of each separate basic color into an image.
-     *
-     * @param data The color data. Data[i][x][y] tells the shade of color i in
-     * the pixel (x,y).
-     * @return The image.
+     * Writes raw data on the hard disk in .bmp-form. The data must be in the 
+     * same form as it is read in the readFileIntoByteData-method.
+     * @param data the pixel data of the image.
+     * @param outputFile the file into which the image will be written.
+     * @throws IOException 
      */
-    private BufferedImage createImageFromBgrData(byte[][][] data) {
+    public static void writeByteDataIntoBitmap(byte[][][] data, File outputFile) throws IOException{
+        int height = data[0][0].length;
+        int width = data[0].length;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 
-        int h = data[0][0].length;
-        int w = data[0].length;
-        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
-
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < h; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 byte[] colors = new byte[data.length];
                 for (int i = 0; i < data.length; i++) {
                     colors[i] = data[i][x][y];
@@ -58,20 +59,8 @@ public class bitmapIO {
                 image.setRGB(x, y, AuxiliaryMethods.colorsToBgrInteger(colors));
             }
         }
-
-
-
-        return image;
+        
+        ImageIO.write(image, "bmp", outputFile);
     }
-    
-        /**
-     * Creates a .bmp-file of the given image onto the hard disk.
-     * @param image The image to be saved.
-     * @param filename The name of the file into which the image will be saved
-     * @throws IOException If the save fails.
-     */
-    private void writeImageToBmpFile(BufferedImage image, String filename) throws IOException{
-        File file = new File(filename);
-        ImageIO.write(image, "bmp", file);
-    }
+
 }

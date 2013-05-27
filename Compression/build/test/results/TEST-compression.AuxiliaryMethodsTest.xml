@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="1" hostname="mikko-System-Product-Name" name="compression.AuxiliaryMethodsTest" tests="2" time="0.053" timestamp="2013-05-23T20:21:54">
+<testsuite errors="0" failures="0" hostname="mikko-System-Product-Name" name="compression.AuxiliaryMethodsTest" tests="3" time="0.073" timestamp="2013-05-27T13:37:45">
   <properties>
     <property name="libs.jsp-compiler.javadoc" value="" />
     <property name="netbeans.autoupdate.country" value="US" />
@@ -59,7 +59,7 @@
     <property name="manifest.available+main.class" value="true" />
     <property name="libs.spring-webmvc3.0.maven-pom" value="" />
     <property name="libs.swing-layout.maven-pom" value="" />
-    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner compression.AuxiliaryMethodsTest filtertrace=true haltOnError=false haltOnFailure=false showoutput=true outputtoformatters=true logfailedtests=true logtestlistenerevents=true formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/hamppis/NetBeansProjects/Compression/build/test/results/TEST-compression.AuxiliaryMethodsTest.xml crashfile=/home/hamppis/NetBeansProjects/Compression/build/junitvmwatcher3438675755657095714.properties propsfile=/home/hamppis/NetBeansProjects/Compression/build/junit8592008056953392302.properties" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner compression.AuxiliaryMethodsTest filtertrace=true haltOnError=false haltOnFailure=false showoutput=true outputtoformatters=true logfailedtests=true logtestlistenerevents=true formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/hamppis/NetBeansProjects/Compression/build/test/results/TEST-compression.AuxiliaryMethodsTest.xml crashfile=/home/hamppis/NetBeansProjects/Compression/build/junitvmwatcher2934470051493917185.properties propsfile=/home/hamppis/NetBeansProjects/Compression/build/junit6089789200985513328.properties" />
     <property name="build.classes.dir" value="build/classes" />
     <property name="netbeans.accept_license_class" value="org.netbeans.license.AcceptLicense" />
     <property name="build.sysclasspath" value="ignore" />
@@ -245,6 +245,7 @@
     <property name="meta.inf.dir" value="src/META-INF" />
     <property name="javadoc.encoding.used" value="UTF-8" />
     <property name="dist.jar" value="dist/Compression.jar" />
+    <property name="netbeans.automatic.build" value="true" />
     <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
     <property name="ant.project.name" value="Compression" />
     <property name="netbeans.hash.code" value="unique=NB_CND_GFMOD_GROOVY_JAVA_MOB_PHP_WEBCOMMON_WEBEE06bb599d6-fa72-43e8-95d8-3497e47191b0_879c6c88-1404-4d71-9949-0d83d879e41d" />
@@ -299,13 +300,13 @@
     <property name="libs.jaxb.classpath" value="/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/jaxb-impl.jar:/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/jaxb-xjc.jar:/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/jaxb1-impl.jar:/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/activation.jar:/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/api/jaxb-api.jar:/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/api/jsr173_1.0_api.jar" />
     <property name="do.depend" value="false" />
     <property name="dist.javadoc.dir" value="dist/javadoc" />
-    <property name="libs.spring-webmvc3.0.classpath" value="/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-webmvc-3.1.1.RELEASE.jar" />
     <property name="libs.swing-layout.classpath" value="/home/hamppis/netbeans-7.2.1/platform/modules/ext/swing-layout-1.0.4.jar" />
+    <property name="libs.spring-webmvc3.0.classpath" value="/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-webmvc-3.1.1.RELEASE.jar" />
     <property name="libs.restlib.src" value="" />
-    <property name="build.generated.dir" value="build/generated" />
     <property name="javac.source" value="1.6" />
-    <property name="line.separator" value="&#xa;" />
+    <property name="build.generated.dir" value="build/generated" />
     <property name="libs.hibernate-persistence.src" value="" />
+    <property name="line.separator" value="&#xa;" />
     <property name="java.specification.version" value="1.6" />
     <property name="java.vm.info" value="mixed mode" />
     <property name="libs.jaxws21.maven-pom" value="" />
@@ -338,26 +339,26 @@
     <property name="libs.groovy-all.classpath" value="/home/hamppis/netbeans-7.2.1/groovy/modules/ext/groovy-all.jar" />
     <property name="javac.fork" value="false" />
     <property name="libs.sjmc-ant-utils.classpath" value="/home/hamppis/netbeans-7.2.1/mobility/modules/ext/org-netbeans-modules-j2me-cdc-project-sjmc.jar" />
-    <property name="libs.JMUnit4CLDC10.classpath" value="/home/hamppis/netbeans-7.2.1/mobility/modules/ext/jmunit4cldc10-1.2.1.jar" />
     <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="libs.JMUnit4CLDC10.classpath" value="/home/hamppis/netbeans-7.2.1/mobility/modules/ext/jmunit4cldc10-1.2.1.jar" />
     <property name="default.javac.source" value="1.6" />
     <property name="debug-transport-by-os" value="dt_socket" />
     <property name="sun.jnu.encoding" value="UTF-8" />
     <property name="libs.MySQLDriver.src" value="" />
     <property name="libs.ant-contrib.maven-pom" value="" />
     <property name="libs.nokiadeployment.javadoc" value="" />
-    <property name="build.test.results.dir" value="build/test/results" />
     <property name="java.runtime.version" value="1.6.0_24-b24" />
+    <property name="build.test.results.dir" value="build/test/results" />
     <property name="libs.ejb3-persistence.javadoc" value="" />
-    <property name="jna.platform.library.path" value="/usr/lib/i386-linux-gnu:/lib/i386-linux-gnu:/usr/lib:/lib" />
-    <property name="libs.sjmc-ant-utils.javadoc" value="" />
     <property name="manifest.available+main.class+mkdist.available" value="true" />
+    <property name="libs.sjmc-ant-utils.javadoc" value="" />
+    <property name="jna.platform.library.path" value="/usr/lib/i386-linux-gnu:/lib/i386-linux-gnu:/usr/lib:/lib" />
     <property name="default.javac.target" value="1.6" />
     <property name="libs.junit_4.classpath" value="/home/hamppis/netbeans-7.2.1/platform/modules/ext/junit-4.10.jar" />
     <property name="user.timezone" value="" />
     <property name="nb.junit.single" value="false" />
-    <property name="libs.javaee-endorsed-api-6.0.maven-pom" value="" />
     <property name="libs.ant-contrib.src" value="" />
+    <property name="libs.javaee-endorsed-api-6.0.maven-pom" value="" />
     <property name="netbeans.dirs" value="/home/hamppis/netbeans-7.2.1/nb:/home/hamppis/netbeans-7.2.1/ergonomics:/home/hamppis/netbeans-7.2.1/ide:/home/hamppis/netbeans-7.2.1/java:/home/hamppis/netbeans-7.2.1/apisupport:/home/hamppis/netbeans-7.2.1/webcommon:/home/hamppis/netbeans-7.2.1/websvccommon:/home/hamppis/netbeans-7.2.1/enterprise:/home/hamppis/netbeans-7.2.1/mobility:/home/hamppis/netbeans-7.2.1/profiler:/home/hamppis/netbeans-7.2.1/python:/home/hamppis/netbeans-7.2.1/php:/home/hamppis/netbeans-7.2.1/identity:/home/hamppis/netbeans-7.2.1/harness:/home/hamppis/netbeans-7.2.1/cnd:/home/hamppis/netbeans-7.2.1/dlight:/home/hamppis/netbeans-7.2.1/groovy:/home/hamppis/netbeans-7.2.1/extra:/home/hamppis/netbeans-7.2.1/javacard:/home/hamppis/netbeans-7.2.1/javafx:" />
     <property name="libs.jsf20.javadoc" value="/home/hamppis/netbeans-7.2.1/enterprise/docs/javaee6-doc-api.zip" />
     <property name="java.ext.dirs" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/ext:/usr/java/packages/lib/ext" />
@@ -383,8 +384,8 @@
     <property name="libs.restlib.javadoc" value="/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-apache-client-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-atom-abdera-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-guice-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-multipart-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-simple-server-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/jersey-spring-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/oauth-client-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/oauth-server-1.8-javadoc.zip:/home/hamppis/netbeans-7.2.1/enterprise/docs/oauth-signature-1.8-javadoc.zip" />
     <property name="libs.JAXB-ENDORSED.classpath" value="/home/hamppis/netbeans-7.2.1/ide/modules/ext/jaxb/api/jaxb-api.jar" />
     <property name="libs.eclipselink.classpath" value="/home/hamppis/netbeans-7.2.1/java/modules/ext/eclipselink/eclipselink-2.3.2.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/eclipselink/javax.persistence-2.0.3.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/eclipselink/org.eclipse.persistence.jpa.jpql_1.0.1.jar" />
-    <property name="libs.beans-binding.javadoc" value="/home/hamppis/netbeans-7.2.1/java/docs/beansbinding-1.2.1-doc.zip" />
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="libs.beans-binding.javadoc" value="/home/hamppis/netbeans-7.2.1/java/docs/beansbinding-1.2.1-doc.zip" />
     <property name="java.vm.vendor" value="Sun Microsystems Inc." />
     <property name="libs.CopyLibs.classpath" value="/home/hamppis/netbeans-7.2.1/java/ant/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar" />
     <property name="libs.spring-framework300.classpath" value="/home/hamppis/netbeans-7.2.1/ide/modules/org-apache-commons-logging.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/cglib-2.2.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-aop-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-asm-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-aspects-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-beans-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-context-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-context-support-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-core-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-expression-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-instrument-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-instrument-tomcat-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-jdbc-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-jms-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-orm-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-oxm-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-test-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-tx-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-web-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-webmvc-portlet-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-webmvc-3.1.1.RELEASE.jar:/home/hamppis/netbeans-7.2.1/java/modules/ext/spring-3.0/spring-struts-3.1.1.RELEASE.jar" />
@@ -392,31 +393,28 @@
     <property name="libs.spring-webmvc.maven-pom" value="" />
     <property name="run.jvmargs" value="" />
     <property name="libs.ejb3-persistence.classpath" value="/home/hamppis/netbeans-7.2.1/java/modules/ext/hibernate/ejb3-persistence.jar" />
-    <property name="libs.JAXB-ENDORSED.src" value="" />
     <property name="libs.spring-framework.javadoc" value="" />
+    <property name="libs.JAXB-ENDORSED.src" value="" />
     <property name="libs.testng.javadoc" value="/home/hamppis/netbeans-7.2.1/platform/docs/testng-6.5.1-javadoc.zip" />
     <property name="libs.PostgreSQLDriver.classpath" value="/home/hamppis/netbeans-7.2.1/ide/modules/ext/postgresql-9.1-901.jdbc4.jar" />
     <property name="libs.jsf12.maven-pom" value="" />
     <property name="libs.junit.src" value="" />
-    <property name="annotation.processing.source.output" value="build/generated-sources/ap-source-output" />
     <property name="ant.file.Compression" value="/home/hamppis/NetBeansProjects/Compression/build.xml" />
+    <property name="annotation.processing.source.output" value="build/generated-sources/ap-source-output" />
     <property name="main.class" value="compression.Compression" />
     <property name="build.dir" value="build" />
     <property name="libs.CopyLibs.src" value="" />
     <property name="libs.jsp-compilation.classpath" value="/home/hamppis/netbeans-7.2.1/java/ant/lib/ant.jar:/home/hamppis/netbeans-7.2.1/enterprise/modules/ext/servlet3.0-jsp2.2-api.jar:/home/hamppis/netbeans-7.2.1/enterprise/modules/ext/glassfish-jspparser-3.0.jar:/home/hamppis/netbeans-7.2.1/enterprise/modules/ext/jsf-2_1/jsf-api.jar:/home/hamppis/netbeans-7.2.1/enterprise/modules/ext/jstl.jar:/home/hamppis/netbeans-7.2.1/java/ant/lib/ant-launcher.jar" />
     <property name="ant.version" value="Apache Ant(TM) version 1.8.3 compiled on February 26 2012" />
-    <property name="build.classes.excludes" value="**/*.java,**/*.form" />
     <property name="file.encoding" value="UTF-8" />
+    <property name="build.classes.excludes" value="**/*.java,**/*.form" />
     <property name="jdkBug6558476" value="false" />
     <property name="javadoc.nonavbar" value="false" />
     <property name="platform.active" value="default_platform" />
   </properties>
-  <testcase classname="compression.AuxiliaryMethodsTest" name="testBgrIntegerToColor" time="0.005">
-    <failure message="Numbers 0-255&lt;&lt;8 should have nonzero green component" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Numbers 0-255&lt;&lt;8 should have nonzero green component
-	at compression.AuxiliaryMethodsTest.testBgrIntegerToColor(AuxiliaryMethodsTest.java:51)
-</failure>
-  </testcase>
+  <testcase classname="compression.AuxiliaryMethodsTest" name="testBgrIntegerToColor" time="0.005" />
   <testcase classname="compression.AuxiliaryMethodsTest" name="testColorsToBgrInteger" time="0.0" />
+  <testcase classname="compression.AuxiliaryMethodsTest" name="testFromIntegerToByteAndBack" time="0.019" />
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
