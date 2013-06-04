@@ -1,77 +1,76 @@
 package compression;
 
-import java.awt.image.BufferedImage;
+import GUI.GraphicalUI;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
 
 public class Compression {
 
-    /**
-     * Everything here is just for testing.
-     */
+    
     public static void main(String[] args) throws IOException {
 
-        File file = new File("c1.bmp");
-        testSix(file);
-    }
-
-    /**
-     * Will be deleted.
-     */
-    public static void testOne(File file) throws IOException {
-        byte[][][] data = BitmapIO.readFileIntoByteData(file);
-        BitmapIO.writeByteDataIntoBitmap(data, new File("d.bmp"));
-    }
-
-    /**
-     * Will be deleted
-     */
-    public static void testTwo(File file) throws IOException {
-        byte[][][] data = BitmapIO.readFileIntoByteData(file);
-        byte[] d = new byte[1024];
-        for (int i = 0; i < d.length; i++) {
-            d[i] = data[0][100][i];
-        }
-        int[] transform = HaarTransform.transformPowerOfTwo(d);
-        print(d, transform, HaarTransform.inversePowerOfTwo(transform));
-    }
-
-    /**
-     * Will be deleted
-     */
-    public static void testThree(File file) throws IOException {
-        byte[][][] data = BitmapIO.readFileIntoByteData(file);
-        byte[] d = new byte[1000];
-        for (int i = 0; i < d.length; i++) {
-            d[i] = data[0][100][i];
-        }
-        int[] transform = HaarTransform.transformArbitraryLength(d);
-        print(d, transform, HaarTransform.inverseArbitraryLength(transform));
-
-    }
-
-    /**
-     * Will be deleted
-     */
-    public static void testFour(File file) throws IOException {
-        byte[][][] data = BitmapIO.readFileIntoByteData(file);
-        Random r = new Random();
-
-        for (int row = 0; row < 100; row++) {
-            int howMany = 2 + r.nextInt(data[0][0].length - 2);
-            byte[] d = new byte[howMany];
-            for (int i = 0; i < d.length; i++) {
-                d[i] = data[0][row][i];
-            }
-            int[] transform = HaarTransform.transformArbitraryLength(d);
-            byte[] e = HaarTransform.inverseArbitraryLength(transform);
-            if (!compareArrays(d,e)) {
-                System.out.println("Doesn't work!");
-            }
+        switch (args.length){
+            case 0: launchGui();
+                break;
+            case 2: commandLineFromWtfToBmp(args);
+                break;
+            case 3: commandLineFromBmpToWtf(args);
+                break;
+            default: System.out.println("Syntax error.");
         }
     }
 
+    
+    /**
+     * If the program is run from the command line and has three arguments, this
+     * method will be called. It transforms a bmp-file to a wtf-file.
+     * @param args[0] level of loss of the transform, 0 is lossless.
+     * @param args[1] The (path and) name of the bmp file to be tranformed.
+     * @param args[2] The (path and) name of the wtf file to which the tranformed
+     * data will be saved.
+     * @throws IOException 
+     */
+    public static void commandLineFromBmpToWtf(String[] args) throws IOException{
+        int levelOfLoss = Integer.parseInt(args[0]);
+        File inputFile = new File(args[1]);
+        File outputFile = new File(args[2]);
+        
+        byte[][][] data = BitmapIO.readFileIntoByteData(inputFile);
+        int originalHeight = data[0][0].length; // This hopefully lets the garbage collector destroy the data array.
+        int[][][] transform = HaarTransform.lossyTransfrom(data, levelOfLoss);
+        WTFIO.writeMixedData(transform, originalHeight, levelOfLoss, outputFile);
+    }
+
+    /**
+     * If the program is run from the command line and has three arguments, this
+     * mehtod will be called. It transfroms a wtf-file to a bmp-file.
+     * @param args[0] The wtf-file to be transformed.
+     * @param args[1] The resulting bmp-file.
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    public static void commandLineFromWtfToBmp(String[] args) throws FileNotFoundException, IOException{
+        File inputFile = new File(args[0]);
+        File outputFile = new File(args[1]);
+        
+        WTFIO read = new WTFIO(inputFile);
+        int[][][] transform = read.readData();
+        int originalHeight = read.getOriginalHeight();  // This is to let garbage collector to...
+        int levelOfLoss = read.getLevelOfLoss();        // ..destroy the object read.
+        byte[][][] data = HaarTransform.inverseLossy3DArray(transform, originalHeight, levelOfLoss);
+        BitmapIO.writeByteDataIntoBitmap(data, outputFile);
+    }
+
+    
+    // THINGS BELOW THIS ARE FOR TESTING PURPOSES AND WILL BE DELETED.
+     
+    
+    
+    
+    
+    
     public static boolean compareArrays(byte[] a, byte[] b) {
         if (a.length != b.length) {
             return false;
@@ -118,23 +117,91 @@ public class Compression {
         printData(retrievedData);
     }
 
-    /**
-     * Will be delted.
-     */
-    private static void testFive(File file) {
-        for (int i = 0; i < 100; i++) {
-            System.out.println(i+"\t"+HaarTransform.supPowerOfTwo(i));
+    private static void analyseTransfromRow(int[] data, FileWriter writer) throws IOException {
+        int interval = 0;
+        int intervalLength = HaarTransform.supPowerOfTwo(data.length) / 2;
+        int pointer = 0;
+
+        for (int i = intervalLength; i >= 1; i /= 2) {
+            int smallest = Integer.MAX_VALUE;
+            int biggest = Integer.MIN_VALUE;
+            for (int j = 0; j < i; j++) {
+                if (data[pointer + j] > biggest) {
+                    biggest = data[pointer + j];
+                }
+                if (data[pointer + j] < smallest) {
+                    smallest = data[pointer + j];
+                }
+            }
+            int dif = biggest - smallest;
+            writer.write(" " + dif);
+            // writer.write("s: "+smallest+" b: "+biggest);
+            pointer += i;
         }
+        writer.write("\n");
     }
-    
-    /**
-     * Will be delted.
-     */
-    private static void testSix(File file) throws IOException {
+
+
+
+    private static void testEleven(File file, int levelOfLoss) throws IOException {
         byte[][][] data = BitmapIO.readFileIntoByteData(file);
-        int[][][] transform = HaarTransform.transform3DArray(data);
-        byte[][][] retrieved = HaarTransform.inverse3DArray(transform);
-        
-        BitmapIO.writeByteDataIntoBitmap(data, new File("test.bmp"));
+        int[][][] transform = HaarTransform.lossyTransfrom(data, levelOfLoss);
+
+        FileWriter w = new FileWriter(new File("trnsform.txt"));
+        for (int i = 0; i < transform[0][0].length; i++) {
+            w.write(transform[0][100][i] + " ");
+        }
+
+        w.flush();
+        w.close();
+    }
+
+    private static void testTwelve(File file, int levelOfLoss) throws IOException {
+        byte[][][] data = BitmapIO.readFileIntoByteData(file);
+        int[][][] transform = HaarTransform.lossyTransfrom(data, levelOfLoss);
+        analyseData(transform, levelOfLoss);
+    }
+
+    private static void analyseData(int[][][] t, int levelOfLoss) {
+
+        int halfBytes = 0;
+        int bytes = 0;
+        int shorts = 0;
+        int tqInts = 0;
+        for (int i = 0; i < t.length; i++) {
+            for (int j = 0; j < t[0].length; j++) {
+                for (int k = 0; k < t[0][0].length; k++) {
+                    int a = t[i][j][k];
+                    if (-8 <= a && a <= 7) {
+                        halfBytes++;
+                    } else if (-128 <= a && a <= 127) {
+                        bytes++;
+                    } else if (-32768 <= a && a <= 32767) {
+                        shorts++;
+                    } else if (- 8388607 <= a && a <= 0xFFFFFF / 2) {
+                        tqInts++;
+                    } else {
+                        System.out.println("Syntax error! " + a);
+                    }
+                }
+            }
+        }
+        int total = halfBytes + bytes + shorts + tqInts;
+
+        System.out.println("Half bytes: " + halfBytes + " Bytes: " + bytes + " Shorts: " + shorts + " Ints: " + tqInts);
+        System.out.println("Total: " + total);
+        int size = t.length * t[0].length * t[0][0].length;
+        System.out.println("Size: " + size);
+
+        int bitsInOriginal = size * 8 * (int) Math.pow(2.0, (double) levelOfLoss);
+        int bits = halfBytes * 4 + bytes * 8 + shorts * 16 + tqInts * 24;
+        bits += 2 * total;
+        System.out.println("Bits in original: \t" + bitsInOriginal);
+        System.out.println("Bits compressed: \t" + bits);
+
+    }
+
+    private static void launchGui() {
+        GraphicalUI gui = new GraphicalUI();
     }
 }

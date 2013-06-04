@@ -2,6 +2,12 @@ package compression;
 
 import java.util.Arrays;
 
+/**
+ *
+ * This class contains methods for performing a Haar wavelet transform on an
+ * array of data and retrieving the original data from the transform. Some of
+ * the methods are particular to image data, and some are more general.
+ */
 public class HaarTransform {
 
     /**
@@ -76,6 +82,13 @@ public class HaarTransform {
         return sums;
     }
 
+    /**
+     * Retrieves original data from the transform. It is assumed that the length
+     * of the transform (and thus the original data) is a power of two.
+     *
+     * @param transform The coefficients produced by the transform.
+     * @return The original data.
+     */
     public static byte[] inversePowerOfTwo(int[] transform) {
 
         int size = transform.length;
@@ -106,14 +119,14 @@ public class HaarTransform {
     }
 
     /**
-     * Converts integers to bytes, but first adds addThis to each of them, and
-     * divides by divideByThis. This weird method exists just to serve the needs
-     * of the mehtod inversePowerOfTwo.
+     * An auxiliary method to calculate the inverses of a transform. Converts
+     * integers to bytes, but first adds addThis to each of them, and divides by
+     * divideByThis.
      *
      * @param data The integers to be manipulated.
-     * @param addThis The constant which is added to the integers.
+     * @param addThis The constant that is added to the integers.
      * @param divideByThis The constant by which each integer is divided.
-     * @return
+     * @return The manipulated data.
      */
     public static byte[] addDivideConvert(int[] data, int addThis, int divideByThis) {
         byte[] d = new byte[data.length];
@@ -158,7 +171,7 @@ public class HaarTransform {
      * assumed that the input data is of the form produced by the method
      * transformArbitraryLength.
      *
-     * @param transform The transform that will be inversed.
+     * @param transform The transform whose inverse will be calculated.
      * @return The original data from which the transform was made.
      */
     public static byte[] inverseArbitraryLength(int[] transform) {
@@ -175,16 +188,16 @@ public class HaarTransform {
             remainingSize -= subSize;
             subSize = supPowerOfTwo(remainingSize);
         }
-        
-        if (remainingSize ==1) {
-            inverse[inverse.length-1] = (byte) transform[transform.length -1];
+
+        if (remainingSize == 1) {
+            inverse[inverse.length - 1] = (byte) transform[transform.length - 1];
         }
 
         return inverse;
     }
 
     /**
-     * Copies an array of integers into another array.
+     * An auxiliary method that copies an array of integers into another array.
      *
      * @param copyThese The array whose values will be copied to the other one.
      * @param copyHere The array where they will be copied.
@@ -198,7 +211,7 @@ public class HaarTransform {
     }
 
     /**
-     * Copies an array of bytes into another array.
+     * An auxiliary method that copies an array of bytes into another array.
      *
      * @param copyThese The array whose values will be copied to the other one.
      * @param copyHere The array where they will be copied.
@@ -212,55 +225,274 @@ public class HaarTransform {
     }
 
     /**
-     * Returns the greatest number that is power of two and less than n.
+     * Returns the greatest number that is a power of two and less than n.
      *
      * @param n A nonnegative integer.
      * @return sup{ 2^k : 2^k <= n}.
      */
     public static int supPowerOfTwo(int n) {
         int sup = 1;
-        while ( sup <= n){
+        while (sup <= n) {
             sup *= 2;
         }
-        return sup/2;
+        return sup / 2;
     }
-    
-    
+
     /**
-     * Transforms a #D array of data. The transform is done separately to each
-     * data[i][j].
+     * Transforms a 3D array of data. The transform is done separately to each
+     * one dimensional array data[i][j] with the method
+     * transformArbitraryLength.
+     *
      * @param data The data to be transformed.
      * @return The transform.
      */
-    public static int[][][] transform3DArray(byte[][][] data){
-        
+    public static int[][][] transform3DArray(byte[][][] data) {
+
         int dim0 = data.length;
         int dim1 = data[0].length;
         int dim2 = data[0][0].length;
         int[][][] transform = new int[dim0][dim1][dim2];
-        
+
         for (int i = 0; i < dim0; i++) {
             for (int j = 0; j < dim1; j++) {
                 transform[i][j] = transformArbitraryLength(data[i][j]);
             }
         }
-        
+
         return transform;
     }
-    
-    public static byte[][][] inverse3DArray(int[][][] transform){
-        
+
+    /**
+     * Retrieves the original data of a transform of a 3D array. It is assumed
+     * that the transform is of the form produced by the method
+     * transform3DArray.
+     *
+     * @param transform The transform.
+     * @return The original data.
+     */
+    public static byte[][][] inverse3DArray(int[][][] transform) {
+
         int dim0 = transform.length;
         int dim1 = transform[0].length;
         int dim2 = transform[0][0].length;
         byte[][][] inverse = new byte[dim0][dim1][dim2];
-        
+
         for (int i = 0; i < dim0; i++) {
             for (int j = 0; j < dim1; j++) {
                 inverse[i][j] = inverseArbitraryLength(transform[i][j]);
             }
         }
-        
+
         return inverse;
     }
+
+    /**
+     * Performs a transform on the data array, but loses some of the data. The
+     * parameter levelOfLoss tells how much data is lost. If it's 0, the
+     * transform is lossless. For 1 the finest level of coefficients will be
+     * omitted, for 2 the second finest too etc. This isn't very efficient
+     * method, since it does all the work the lossless transform does and a
+     * little more.
+     *
+     * @param data The data to be transformed.
+     * @param levelOfLoss How many levels of the coefficients will be omitted.
+     * @return The transform.
+     */
+    public static int[] lossyTransformArbitraryLength(byte[] data, int levelOfLoss) {
+        int subSize = supPowerOfTwo(data.length);    // the biggest power of two that can be fitted in the remaingn data length
+        int remainingSize = data.length;             // The length of data yet to be transformed.
+        int[] transform = null;                       // The result of the transform
+        int pointer = 0;                             // Where the untransformed data begins
+
+        // This will create a transform of the biggest array of length 2^n that fits inside 
+        // the untransformed part of the data array. Then it joins the coefficients that
+        // will be kept after the losing to the array transform.
+        while (remainingSize > 1 && subSize > 1) {
+            int[] partialTransform = transformPowerOfTwo(Arrays.copyOfRange(data, pointer, pointer + subSize));
+            int keepSize = Math.max(1, subSize / pow(2, levelOfLoss));
+            partialTransform = Arrays.copyOfRange(partialTransform, subSize - keepSize, subSize);
+            transform = joinArrays(transform, partialTransform);
+            pointer += subSize;
+            remainingSize -= subSize;
+            subSize = supPowerOfTwo(remainingSize);
+        }
+
+        // If the last number is not transformed, it will be copied:
+        if (remainingSize == 1) {
+            transform[transform.length - 1] = data[data.length - 1];
+        }
+
+        return transform;
+    }
+
+    /**
+     * Performs a transform on a 3D data array and loses some of the data. The
+     * parameter levelOfLoss tells how much data is lost. If it's 0, the
+     * transform is lossless. For 1 the finest level of coefficients will be
+     * omitted, for 2 the second finest too etc. This isn't very efficient
+     * method, since it does all the work the lossless transform does and a
+     * little more.
+     *
+     * @param data The data to be transformed.
+     * @param levelOfLoss How many levels of the coefficients will be omitted.
+     * @return The transform.
+     */
+    public static int[][][] lossyTransfrom(byte[][][] data, int levelOfLoss) {
+        int dim0 = data.length;
+        int dim1 = data[0].length;
+        int dim2 = data[0][0].length;
+        int[][][] transform = new int[dim0][dim1][dim2];
+
+        for (int i = 0; i < dim0; i++) {
+            for (int j = 0; j < dim1; j++) {
+                transform[i][j] = lossyTransformArbitraryLength(data[i][j], levelOfLoss);
+            }
+        }
+
+        return transform;
+    }
+
+    /**
+     * An auxiliary method that raises an integer to the power of another. 
+     * The power must be nonnegative.
+     *
+     * @param theNumber The number whose power will be calculated
+     * @param power The power to which theNumber will be raised.
+     * @return The result: theNumber^power.
+     */
+    public static int pow(int theNumber, int power) {
+        int result = 1;
+        for (int i = 0; i < power; i++) {
+            result *= theNumber;
+        }
+        return result;
+    }
+
+    /**
+     * An auxiliary method that joins two arrays together. 
+     * @param array1 The first array to be joined.
+     * @param array2 The second array to be joined.
+     * @return The two arrays joined as (array1, array2).
+     */
+    public static int[] joinArrays(int[] array1, int[] array2) {
+        if (array1 == null) {
+            return array2;
+        }
+        
+        if (array2 == null){
+            return array1;
+        }
+
+        int length = array1.length + array2.length;
+        int[] joined = new int[length];
+        for (int i = 0; i < array1.length; i++) {
+            joined[i] = array1[i];
+        }
+        for (int i = 0; i < array2.length; i++) {
+            joined[array1.length + i] = array2[i];
+        }
+        return joined;
+    }
+
+    /**
+     * Retrieves the (approximate) original data from a lossy transform. It is
+     * assumed that the transform is of the form produced by the method lossyTransform.
+     * 
+     * @param transform The transform to be inverted.
+     * @param originalHeight The height of the original picture, or more generally the length
+     * of the compressed line before the compression.
+     * @param levelOfLoss How many levels of coefficients were lost in the transform.
+     * @return The (approximate) original data.
+     */
+    public static byte[][][] inverseLossy3DArray(int[][][] transform, int originalHeight, int levelOfLoss) {
+
+        int dim0 = transform.length;
+        int dim1 = transform[0].length;
+        int dim2 = originalHeight; // This isn't evident from the size of transform[0][0].
+        byte[][][] inverse = new byte[dim0][dim1][dim2];
+
+        for (int i = 0; i < dim0; i++) {
+            for (int j = 0; j < dim1; j++) {
+                inverse[i][j] = inverseLossyArbitraryLength(transform[i][j], originalHeight, levelOfLoss);
+            }
+        }
+
+        return inverse;
+
+    }
+
+    /**
+     * Retrieves the (approximate) original data of a lossy transform. It is assumed
+     * that the original data's length was a power of two (and consequently the tranform's
+     * length is also).
+     * @param transform The transform.
+     * @param levelOfLoss How many levels of coefficients were lost in the transform.
+     * @return The (approximate) original data.
+     */
+    public static byte[] inverseLossyPowerOfTwo(int[] transform, int levelOfLoss) {
+
+        if (transform.length == 1) {
+            byte[] result = {(byte) transform[0]};
+            return result;
+        }
+
+        int size = transform.length;
+        int originalSize = transform.length * pow(2, levelOfLoss);
+        int[] inverse = new int[originalSize];
+
+        // This goes like the transform in the lossless case (see the method
+        // inversePowerOfTwo), with the exception that the steps are bigger.
+        int pointer = 0; // 
+        for (int howMany = size / 2; howMany >= 1; howMany >>= 1) {
+            for (int theSummed = 0; theSummed < howMany; theSummed++) {
+                int step = (originalSize) / (2 * howMany);    // On how many number the summed wavelet has the value 1...
+                for (int i = 0; i < step; i++) { // ...first we'll sum over that interval...
+                    inverse[theSummed * 2 * step + i] += transform[pointer + theSummed] * howMany;
+                }
+                for (int i = 0; i < step; i++) { // ...and then the latter, with thw wavelet value -1.
+                    inverse[theSummed * 2 * step + step + i] -= transform[pointer + theSummed] * howMany;
+                }
+            }
+            pointer += howMany;
+        }
+
+        // The factor howMany at the end of the sums is because we didn't normalize the wavelets when doing the transform.
+
+        return addDivideConvert(inverse, transform[transform.length - 1], originalSize);
+    }
+
+    /**
+     * Retrieves the (approximate) original data of a lossy transform. It is assumed 
+     * that the transform is of the form produced by the method lossyTransformArbitraryLength.
+     * 
+     * @param transform The transform.
+     * @parma originalSize The size of the data array before the compression.
+     * @param levelOfLoss How many levels of coefficients were lost in the transform.
+     * @return The (approximate) original data.
+     */
+    public static byte[] inverseLossyArbitraryLength(int[] transform, int originalSize, int levelOfLoss) {
+
+        int subSize = supPowerOfTwo(originalSize);
+        int remainingSize = originalSize;
+        byte[] inverse = new byte[originalSize];
+        int readPointer = 0; // Points to the data that is read.
+        int writePointer = 0; // Points to the place where next data will be written.
+
+        while (remainingSize > 1) {
+            int keptSize = Math.max(1, subSize / pow(2, levelOfLoss)); // Tells how much of the original data was kept
+            byte[] partialInverse = inverseLossyPowerOfTwo(Arrays.copyOfRange(transform, readPointer, readPointer + keptSize), levelOfLoss);
+            copyValuesTo(partialInverse, inverse, writePointer);
+            readPointer += keptSize;
+            writePointer += subSize;
+            remainingSize -= subSize;
+            subSize = supPowerOfTwo(remainingSize);
+        }
+
+        if (remainingSize == 1) {
+            inverse[inverse.length - 1] = (byte) transform[transform.length - 1];
+        }
+
+        return inverse;
+    }
+    
 }
