@@ -11,6 +11,75 @@ import java.util.Arrays;
 public class HaarTransform {
 
     /**
+     * Creates a binary tree of the sums of the data. It is assumed that s :=
+     * data.length is a power of 2. The resulting tree is returned as an array
+     * with leaves as the first s/2 elements, their parents as the next s/4
+     * elements etc. The last element will be the root, i.e. the sum of all
+     * the data. The length of the returned array is one less than the length of
+     * the data array.
+     *
+     * @param data The data of which the sums will be calculated.
+     * @return A binary sum tree of the data.
+     */
+    private static int[] sumTree(byte[] data) {
+        int size = data.length;
+        int[] sums = new int[size - 1];
+
+        // The first elements are the pairwise sums of the data:
+        for (int i = 0; i < size / 2; i++) {
+            sums[i] = data[2 * i] + data[2 * i + 1];
+        }
+
+        // The rest of the elements are calculated from the previous sums:
+        int pointer = size / 2;
+        for (int i = size / 4; i >= 1; i = i / 2) {
+            for (int j = 0; j < i; j++) {
+                sums[pointer + j] = sums[pointer - 2 * i + 2 * j] + sums[pointer - 2 * i + 2 * j + 1];
+            }
+            pointer += i;
+        }
+
+
+        return sums;
+    }
+    
+    /**
+     * Creates a binary sum tree whose depth is predetermined. It is assumed
+     * that the length of the data-array is 2^n for some n. LeafSize tells how
+     * many entries of the data-array is summed to be one leaf of the resulting 
+     * tree. 
+     * @param leafSize The size of leaves in the resulting array. Must be 2^n
+     * for some n=0,1,2,..,log_2(data.size).
+     * @return The tree with the leaves as first entries, their parents after it
+     * and so on, until the root is the last entry.
+     */
+    
+    public static int[] sumTree(byte[] data, int leafSize){
+        
+        int leaves = data.length / leafSize;
+        int[] tree = new int[2*leaves -1];
+        
+        // Create the leaves:
+        for (int leaf = 0; leaf < leaves; leaf++) {
+            for (int i = 0; i < leafSize; i++) {
+                tree[leaf] += data[leafSize * leaf +i];
+            }
+        }
+        
+        // And the rest of the tree:
+        int pointer = leaves; // points to the start of new level in the tree
+        for (int i = leaves/2; i >= 1; i = i/2) { // Write one level at time
+            for (int j = 0; j < i; j++) {
+                tree[pointer+j] = tree[pointer -2*i + 2*j] + tree[pointer -2*i + 2*j+1];;
+            }
+            pointer += i;
+        }
+        
+        return tree;
+    }
+    
+    
+    /**
      * This creates a Haar transform of a data set whose length is some positive
      * power of two.
      *
@@ -49,38 +118,6 @@ public class HaarTransform {
         return transform;
     }
 
-    /**
-     * Creates a binary tree of the sums of the data. It is assumed that s :=
-     * data.length is a power of 2. The resulting tree is presented as an array
-     * with leaves as the first s/2 elements, their parents as the next s/4
-     * elements etc. and the last element will be the root, i.e. the sum of all
-     * the data. The length of the returned array is one less than the length of
-     * the data array.
-     *
-     * @param data The data of which the sums will be calculated.
-     * @return A binary sum tree of the data.
-     */
-    private static int[] sumTree(byte[] data) {
-        int size = data.length;
-        int[] sums = new int[size - 1];
-
-        // The first elements are the pairwise sums of the data:
-        for (int i = 0; i < size / 2; i++) {
-            sums[i] = data[2 * i] + data[2 * i + 1];
-        }
-
-        // The rest of the elements are calculated from the previous sums:
-        int pointer = size / 2;
-        for (int i = size / 4; i >= 1; i = i / 2) {
-            for (int j = 0; j < i; j++) {
-                sums[pointer + j] = sums[pointer - 2 * i + 2 * j] + sums[pointer - 2 * i + 2 * j + 1];
-            }
-            pointer += i;
-        }
-
-
-        return sums;
-    }
 
     /**
      * Retrieves original data from the transform. It is assumed that the length
@@ -96,7 +133,7 @@ public class HaarTransform {
 
         // We'll sum the all wavelets of the same size at one time. Below the
         // variable howMany tells how many wavelets there are of the kind that 
-        // is currently summed. The variable pointer points to the index of first
+        // are summed at the time. The variable pointer points to the index of first
         // such wavelet's coefficient. Variable theSummed tells, how manyth is
         // the wavelet we are summing, counted from pointer.
         int pointer = 0; // 
@@ -196,48 +233,7 @@ public class HaarTransform {
         return inverse;
     }
 
-    /**
-     * An auxiliary method that copies an array of integers into another array.
-     *
-     * @param copyThese The array whose values will be copied to the other one.
-     * @param copyHere The array where they will be copied.
-     * @param startingIndex The first index of the object array that is written
-     * on.
-     */
-    public static void copyValuesTo(int[] copyThese, int[] copyHere, int startingIndex) {
-        for (int i = 0; i < copyThese.length; i++) {
-            copyHere[startingIndex + i] = copyThese[i];
-        }
-    }
-
-    /**
-     * An auxiliary method that copies an array of bytes into another array.
-     *
-     * @param copyThese The array whose values will be copied to the other one.
-     * @param copyHere The array where they will be copied.
-     * @param startingIndex The first index of the object array that is written
-     * on.
-     */
-    public static void copyValuesTo(byte[] copyThese, byte[] copyHere, int startingIndex) {
-        for (int i = 0; i < copyThese.length; i++) {
-            copyHere[startingIndex + i] = copyThese[i];
-        }
-    }
-
-    /**
-     * Returns the greatest number that is a power of two and less than n.
-     *
-     * @param n A nonnegative integer.
-     * @return sup{ 2^k : 2^k <= n}.
-     */
-    public static int supPowerOfTwo(int n) {
-        int sup = 1;
-        while (sup <= n) {
-            sup *= 2;
-        }
-        return sup / 2;
-    }
-
+   
     /**
      * Transforms a 3D array of data. The transform is done separately to each
      * one dimensional array data[i][j] with the method
@@ -286,6 +282,34 @@ public class HaarTransform {
         return inverse;
     }
 
+    
+    
+    public static int[] lossyTransformPowerOf2(byte[] data, int levelOfLoss){
+        
+        // The finest wavelets have 2* 2^{levelOfLoss} nonzero elements, of
+        // which the fist half is ones, and the second -1s. To calculate it
+        // we need a sum tree with the leaf size 2^{levelOfLoss}.
+        
+        int[] sumTree = sumTree(data, pow(2,levelOfLoss));
+        int sizeOfLevelOne = (sumTree.length +1) / 4; // Tells how many wavelets
+        // of the finest level we have.
+        int[] transform = new int[2 * sizeOfLevelOne];
+        
+        int levelPointer = 0;
+        for (int i = sizeOfLevelOne; i >= 1 ; i = i/2) { // transform on level at time
+            for (int j = 0; j < i; j++) {
+                int sumIndex = 2 * (levelPointer + j);
+                transform[levelPointer + j] = sumTree[sumIndex] -sumTree[sumIndex+1];
+            }
+            levelPointer += i;
+        }
+        
+        // The last entry is the sum of all the data:
+        transform[transform.length - 1] = sumTree[sumTree.length -1];
+        
+        return transform;
+    }
+    
     /**
      * Performs a transform on the data array, but loses some of the data. The
      * parameter levelOfLoss tells how much data is lost. If it's 0, the
@@ -311,6 +335,8 @@ public class HaarTransform {
             int[] partialTransform = transformPowerOfTwo(Arrays.copyOfRange(data, pointer, pointer + subSize));
             int keepSize = Math.max(1, subSize / pow(2, levelOfLoss));
             partialTransform = Arrays.copyOfRange(partialTransform, subSize - keepSize, subSize);
+            // An alternative way to do it, it takes as much time as the one used.
+            // int[] partialTransform = lossyTransformPowerOf2(Arrays.copyOfRange(data, pointer, pointer + subSize), levelOfLoss);
             transform = joinArrays(transform, partialTransform);
             pointer += subSize;
             remainingSize -= subSize;
@@ -352,48 +378,7 @@ public class HaarTransform {
         return transform;
     }
 
-    /**
-     * An auxiliary method that raises an integer to the power of another. 
-     * The power must be nonnegative.
-     *
-     * @param theNumber The number whose power will be calculated
-     * @param power The power to which theNumber will be raised.
-     * @return The result: theNumber^power.
-     */
-    public static int pow(int theNumber, int power) {
-        int result = 1;
-        for (int i = 0; i < power; i++) {
-            result *= theNumber;
-        }
-        return result;
-    }
-
-    /**
-     * An auxiliary method that joins two arrays together. 
-     * @param array1 The first array to be joined.
-     * @param array2 The second array to be joined.
-     * @return The two arrays joined as (array1, array2).
-     */
-    public static int[] joinArrays(int[] array1, int[] array2) {
-        if (array1 == null) {
-            return array2;
-        }
-        
-        if (array2 == null){
-            return array1;
-        }
-
-        int length = array1.length + array2.length;
-        int[] joined = new int[length];
-        for (int i = 0; i < array1.length; i++) {
-            joined[i] = array1[i];
-        }
-        for (int i = 0; i < array2.length; i++) {
-            joined[array1.length + i] = array2[i];
-        }
-        return joined;
-    }
-
+    
     /**
      * Retrieves the (approximate) original data from a lossy transform. It is
      * assumed that the transform is of the form produced by the method lossyTransform.
@@ -494,5 +479,98 @@ public class HaarTransform {
 
         return inverse;
     }
+    
+    
+    /**
+     * An auxiliary method that raises an integer to the power of another. 
+     * The power must be nonnegative.
+     *
+     * @param theNumber The number whose power will be calculated
+     * @param power The power to which theNumber will be raised.
+     * @return The result: theNumber^power.
+     */
+    public static int pow(int theNumber, int power) {
+        int result = 1;
+        for (int i = 0; i < power; i++) {
+            result *= theNumber;
+        }
+        return result;
+    }
+
+    /**
+     * An auxiliary method that joins two arrays together. 
+     * @param array1 The first array to be joined.
+     * @param array2 The second array to be joined.
+     * @return The two arrays joined as (array1, array2).
+     */
+    public static int[] joinArrays(int[] array1, int[] array2) {
+        if (array1 == null) {
+            return array2;
+        }
+        
+        if (array2 == null){
+            return array1;
+        }
+
+        int length = array1.length + array2.length;
+        int[] joined = new int[length];
+        
+        // An altervative way, takes as long as the currently used.
+//        for (int i = 0; i < array1.length; i++) {
+//            joined[i] = array1[i];
+//        }
+//        for (int i = 0; i < array2.length; i++) {
+//            joined[array1.length + i] = array2[i];
+//        }
+        
+        System.arraycopy(array1, 0, joined, 0, array1.length);
+        System.arraycopy(array2, 0, joined, array1.length, array2.length);
+        
+        
+        return joined;
+    }
+
+     /**
+     * An auxiliary method that copies an array of integers into another array.
+     *
+     * @param copyThese The array whose values will be copied to the other one.
+     * @param copyHere The array where they will be copied.
+     * @param startingIndex The first index of the object array that is written
+     * on.
+     */
+    public static void copyValuesTo(int[] copyThese, int[] copyHere, int startingIndex) {
+        for (int i = 0; i < copyThese.length; i++) {
+            copyHere[startingIndex + i] = copyThese[i];
+        }
+    }
+
+    /**
+     * An auxiliary method that copies an array of bytes into another array.
+     *
+     * @param copyThese The array whose values will be copied to the other one.
+     * @param copyHere The array where they will be copied.
+     * @param startingIndex The first index of the object array that is written
+     * on.
+     */
+    public static void copyValuesTo(byte[] copyThese, byte[] copyHere, int startingIndex) {
+        for (int i = 0; i < copyThese.length; i++) {
+            copyHere[startingIndex + i] = copyThese[i];
+        }
+    }
+
+    /**
+     * Returns the greatest number that is a power of two and less than n.
+     *
+     * @param n A nonnegative integer.
+     * @return sup{ 2^k : 2^k <= n}.
+     */
+    public static int supPowerOfTwo(int n) {
+        int sup = 1;
+        while (sup <= n) {
+            sup *= 2;
+        }
+        return sup / 2;
+    }
+
     
 }

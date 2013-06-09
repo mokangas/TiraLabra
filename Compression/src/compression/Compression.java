@@ -5,56 +5,76 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class Compression {
 
-    
     public static void main(String[] args) throws IOException {
+        
+//        koe();
 
-        switch (args.length){
-            case 0: launchGui();
+        switch (args.length) {
+            case 0:
+                launchGui();
                 break;
-            case 2: commandLineFromWtfToBmp(args);
+            case 2:
+                commandLineFromWtfToBmp(args);
                 break;
-            case 3: commandLineFromBmpToWtf(args);
+            case 3:
+                commandLineFromBmpToWtf(args);
                 break;
-            default: System.out.println("Syntax error.");
+            default:
+                System.out.println("Syntax error.");
         }
     }
-
     
+    public static void koe(){
+        
+      ByteBuffer buffer = ByteBuffer.allocate(8);
+      buffer.putInt(149908);
+      buffer.putInt(234723424);
+        System.out.println(buffer.getInt(0)+" : " + buffer.getInt(4));
+        
+    }
+
     /**
      * If the program is run from the command line and has three arguments, this
      * method will be called. It transforms a bmp-file to a wtf-file.
+     *
      * @param args[0] level of loss of the transform, 0 is lossless.
      * @param args[1] The (path and) name of the bmp file to be tranformed.
-     * @param args[2] The (path and) name of the wtf file to which the tranformed
-     * data will be saved.
-     * @throws IOException 
+     * @param args[2] The (path and) name of the wtf file to which the
+     * tranformed data will be saved.
+     * @throws IOException
      */
-    public static void commandLineFromBmpToWtf(String[] args) throws IOException{
+    public static void commandLineFromBmpToWtf(String[] args) throws IOException {
         int levelOfLoss = Integer.parseInt(args[0]);
         File inputFile = new File(args[1]);
         File outputFile = new File(args[2]);
-        
+
         byte[][][] data = BitmapIO.readFileIntoByteData(inputFile);
         int originalHeight = data[0][0].length; // This hopefully lets the garbage collector destroy the data array.
         int[][][] transform = HaarTransform.lossyTransfrom(data, levelOfLoss);
+        long time = System.currentTimeMillis();
         WTFIO.writeMixedData(transform, originalHeight, levelOfLoss, outputFile);
+
+        time = System.currentTimeMillis() - time;
+        System.out.println(time);
     }
 
     /**
      * If the program is run from the command line and has three arguments, this
      * mehtod will be called. It transfroms a wtf-file to a bmp-file.
+     *
      * @param args[0] The wtf-file to be transformed.
      * @param args[1] The resulting bmp-file.
      * @throws FileNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
-    public static void commandLineFromWtfToBmp(String[] args) throws FileNotFoundException, IOException{
+    public static void commandLineFromWtfToBmp(String[] args) throws FileNotFoundException, IOException {
         File inputFile = new File(args[0]);
         File outputFile = new File(args[1]);
-        
+
         WTFIO read = new WTFIO(inputFile);
         int[][][] transform = read.readData();
         int originalHeight = read.getOriginalHeight();  // This is to let garbage collector to...
@@ -63,14 +83,7 @@ public class Compression {
         BitmapIO.writeByteDataIntoBitmap(data, outputFile);
     }
 
-    
     // THINGS BELOW THIS ARE FOR TESTING PURPOSES AND WILL BE DELETED.
-     
-    
-    
-    
-    
-    
     public static boolean compareArrays(byte[] a, byte[] b) {
         if (a.length != b.length) {
             return false;
@@ -140,8 +153,6 @@ public class Compression {
         }
         writer.write("\n");
     }
-
-
 
     private static void testEleven(File file, int levelOfLoss) throws IOException {
         byte[][][] data = BitmapIO.readFileIntoByteData(file);
