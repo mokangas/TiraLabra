@@ -245,7 +245,7 @@ public class HaarTransformTest {
         int height = 0;
         int levelOfLoss = 0;
         byte[][][] expResult = null;
-        byte[][][] result = HaarTransform.inverseLossy3DArray(transform, height, levelOfLoss);
+        byte[][][] result = HaarTransform.inverseLossyTransform(transform, height, levelOfLoss);
         assertArrayEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

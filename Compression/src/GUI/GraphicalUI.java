@@ -8,8 +8,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -22,9 +20,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicOptionPaneUI;
-import sun.awt.HorizBagLayout;
 
 public class GraphicalUI extends JFrame {
 
@@ -38,18 +34,6 @@ public class GraphicalUI extends JFrame {
 
     public GraphicalUI() {
 
-        // Set the look and feel:
-
-//        try {
-//            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-//        } catch (Exception e) {
-//            try {
-//                UIManager.setLookAndFeel("Windows");
-//            } catch (Exception e2) {
-//                //Uses the default.
-//            }
-//        }
-
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         createContent();
@@ -57,6 +41,9 @@ public class GraphicalUI extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Creates the content of the main window.
+     */
     private void createContent() {
 
         setTitle("WTF!?");
@@ -132,14 +119,21 @@ public class GraphicalUI extends JFrame {
                 ));
     }
 
+    /**
+     * This is called when the convert-button is hit. Chooses the direction of
+     * the conversion depending on the radiobuttons.
+     */
     private void convert() {
         if (bmpToWtf.isSelected()) {
             convertBmpToWtf();
-        } else {
+        } else if (wtfTBmp.isSelected()){
             convertWtfToBmp();
         }
     }
 
+    /**
+     * Calls the main program to convert  a bmp file to a wtf file.
+     */
     private void convertBmpToWtf() {
         String[] arguments = new String[3];
         arguments[0] = "" +spinner.getValue();
@@ -153,6 +147,9 @@ public class GraphicalUI extends JFrame {
         }
     }
 
+    /**
+     * Calls the main program to convert a wtf file to a bmp file.
+     */
     private void convertWtfToBmp() {
         String[] arguments = new String[2];
         arguments[0] = sourcePathField.getText().trim();
@@ -167,18 +164,32 @@ public class GraphicalUI extends JFrame {
         }
     }
 
+    /**
+     * Opens a file choosing dialog when a browse button is hit.
+     */
     private class BrowseButtonListener implements ActionListener {
 
         private JTextField textField;
         private JFrame motherWindow;
         private boolean openFile;
 
+        /**
+         * The constructor
+         * @param textField The field on which the chosen file's path will be updated.
+         * @param motherWindow The window from which the file chooser is opened.
+         * @param openFile True, if the file shooser is of type "open file", false if
+         * it is of the "save file" type.
+         */
         public BrowseButtonListener(JTextField textField, JFrame motherWindow, boolean openFile) {
             this.textField = textField;
             this.motherWindow = motherWindow;
             this.openFile = openFile;
         }
 
+        /**
+         * Launches the file chooser and updates the chosen file's path to the text field.
+         * @param ae 
+         */
         @Override
         public void actionPerformed(ActionEvent ae) {
             if (openFile) {
@@ -197,14 +208,25 @@ public class GraphicalUI extends JFrame {
         }
     }
     
+    /**
+     * A listener for the convert button.
+     */
     private class ConvertButtonListener implements ActionListener {
         
         private GraphicalUI gui;
         
+        /**
+         * 
+         * @param gui The mother window.
+         */
         public ConvertButtonListener(GraphicalUI gui){
             this.gui = gui;
         }
 
+        /**
+         * Launches the convert functionality of the mother window.
+         * @param ae 
+         */
         @Override
         public void actionPerformed(ActionEvent ae) {
             gui.convert();

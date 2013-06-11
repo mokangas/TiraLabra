@@ -8,24 +8,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * This is for reading and writing the compressed pictures, a.k.a. wtf-files.
  *
- * The file header has the following information ------------------------- byte
- * Type of the file, tells how the rest of the information is coded short No of
- * colors = 3 // for possible alterations int Width of the original picture int
- * height of the original picture short level of loss int length of one line in
- * the compressed form. ====================== The Integer form has all the data
+ * The file header has the following information 
+ * ------------------------- 
+ * byte Type of the file, tells how the rest of the information is coded 
+ * short No of colors = 3 // for possible alterations 
+ * int Width of the original picture 
+ * int height of the original picture 
+ * short level of loss 
+ * int length of one line in the compressed form. 
+ * ====================== 
+ * The Integer form has all the data
  * written as integers: t[0][0][0], t[0][0][1], t[0][0][2], t[0][0][3],... It's
- * type (the first byte of the file) is 0.
+ * file type (the first byte of the file) is 0.
  *
- * In mixed form every line has first two integers, short offset tells how
- * manyth is the first coefficient that is of the type short. int offset tells
+ * In the mixed form every line has first two integers, shortOffset tells how
+ * manyth is the first coefficient that is of the type short. intOffset tells
  * how manyth is the first coefficient that is of the type int. The data will be
  * bytes until the index shortOffset is reached, then shorts until intOffset is
- * reached, and all the rest are integers. Mixed form's type is 1.
+ * reached, and all the rest are integers. Mixed form's file type is 1.
  */
 public class WTFIO {
 
@@ -57,7 +61,7 @@ public class WTFIO {
 
     /**
      * This writes a wtf-file on the hard disk as "integer data", which is
-     * specified in the description of this class. It corresponds to type 0.
+     * specified in the description of this class. It corresponds to file type 0.
      * Every coefficient of the transform will be written down as an integer, so
      * this is a particularly wasteful way to do it.
      *
@@ -119,19 +123,6 @@ public class WTFIO {
                 byte[] line = createLineOfMixedData(transform[i][j]);
                 writer.write(line);
 
-//                int offSets[] = calculateOffsets(transform[i][j]);
-//                writer.writeInt(offSets[0]);
-//                writer.writeInt(offSets[1]);
-//                
-//                for (int k = 0; k < offSets[0]; k++) {
-//                    writer.writeByte((byte) transform[i][j][k]);
-//                }
-//                for (int k = offSets[0]; k < offSets[1]; k++) {
-//                    writer.writeShort((short) transform[i][j][k]);
-//                }
-//                for (int k = offSets[1]; k < transform[0][0].length; k++) {
-//                    writer.writeInt(transform[i][j][k]);
-//                }
             }
         }
 
@@ -141,8 +132,8 @@ public class WTFIO {
      * This is an auxiliary method for writing the header of the wtf-file.
      *
      * @param transform The content of the transform
-     * @param originalHeight The original height of the picturem or more
-     * generally, the length of the compressed line.
+     * @param originalHeight The original height of the picture, or more
+     * generally, the length of the line that was compressed.
      * @param levelOfLoss The level of loss in the compression.
      * @param writer The output stream into which the header will be written.
      * @param type The type of the wtf-file.
@@ -215,7 +206,7 @@ public class WTFIO {
 
     /**
      * Reads a wtf-file that is written down as "integer data", i.e. that has
-     * type 0 as explained in the description of this class.
+     * type 0, as explained in the description of this class.
      *
      * @return the transform that is the content of the file.
      * @throws IOException
@@ -235,32 +226,24 @@ public class WTFIO {
     }
 
     /**
-     * Reads a wtf-file that is written down as "integer data", i.e. that has
+     * Reads a wtf-file that is written down as "mixed data", i.e. that has
      * type 1 as explained in the description of this class.
      *
      * @return the transform that is the content of the file.
      * @throws IOException
      */
-    public int[][][] readMixedDataOriginal() throws IOException {
+
+    public int[][][] readMixedData() throws IOException {
 
         int[][][] transformData = new int[noOfColors][originalWidth][compressedHeight];
-        int shortOffset = -1;
-        int intOffset = -1;
+
         for (int i = 0; i < noOfColors; i++) {
             for (int j = 0; j < originalWidth; j++) {
 
-                shortOffset = reader.readInt();
-                intOffset = reader.readInt();
+                int[] offSets = readOffsets();
+                ByteBuffer buffer = readLine(offSets);
+                decodeRawMixedDataLine(buffer, transformData[i][j], offSets);
 
-                for (int k = 0; k < shortOffset; k++) {
-                    transformData[i][j][k] = (int) reader.readByte();
-                }
-                for (int k = shortOffset; k < intOffset; k++) {
-                    transformData[i][j][k] = (int) reader.readShort();
-                }
-                for (int k = intOffset; k < compressedHeight; k++) {
-                    transformData[i][j][k] = reader.readInt();
-                }
             }
         }
 
@@ -268,14 +251,14 @@ public class WTFIO {
         return transformData;
 
     }
-
-    public int[][][] readMixedData() throws IOException {
-
-        int[][][] transformData = new int[noOfColors][originalWidth][compressedHeight];
-        
-        for (int i = 0; i < noOfColors; i++) {
-            for (int j = 0; j < originalWidth; j++) {
-                int[] offSets = new int[2];
+    
+    /**
+     * An auxiliary method to read offsets from the start of a line in mixed data.
+     * @return The offsets as an array {shortOffset, intOffset}.
+     * @throws IOException 
+     */
+    public int[] readOffsets() throws IOException{
+        int[] offSets = new int[2];
                 ByteBuffer buffer = ByteBuffer.allocate(8);
                 for (int k = 0; k < 8; k++) {
                     buffer.put(reader.readByte());
@@ -285,32 +268,54 @@ public class WTFIO {
                     offSets[k] = buffer.getInt(4*k);
                 }
                 
-                int length = offSets[0] + 2 * (offSets[1] - offSets[0]) + 4 * (compressedHeight -offSets[1]);
-                
-                byte[] read = new byte[length];
-                reader.read(read);
-                buffer = ByteBuffer.allocate(length);
-                buffer.put(read);
-                
-                buffer.position(0);
-                for (int k = 0; k < offSets[0]; k++) {
-                    transformData[i][j][k] = (int) buffer.get();
-                }
-                for (int k = offSets[0]; k < offSets[1]; k++) {
-                    transformData[i][j][k] = (int) buffer.getShort();
-                }
-                for (int k = offSets[1]; k < compressedHeight; k++) {
-                    transformData[i][j][k] = (int) buffer.getInt();
-                }
-                
-            }
-        }
-
-        reader.close();
-        return transformData;
-
+                return offSets;
     }
 
+    /**
+     * Reads a line of mixed data.
+     * @param offSets The short and int offsets of the line.
+     * @return The line of compressed data in a ByteBuffer.
+     * @throws IOException 
+     */
+    public ByteBuffer readLine(int[] offSets) throws IOException {
+
+        int length = offSets[0] + 2 * (offSets[1] - offSets[0]) + 4 * (compressedHeight - offSets[1]);
+
+        byte[] readLine = new byte[length];
+        reader.read(readLine);
+        ByteBuffer buffer = ByteBuffer.allocate(length);
+        buffer.put(readLine);
+        
+        return buffer;
+    }
+    
+    
+    /**
+     * Decodesa line of raw mixed data to the approprite data types.
+     * @param buffer The ByteBuffer where the raw data is stored.
+     * @param transformDataLine The array to which the decoded information is stored.
+     * @param offSets The offsets of short and integer data types. Until offSets[0]
+     * numbers are stored as bytes, after it as shorts, and after offSets[1] as ints.
+     */
+    public void decodeRawMixedDataLine(ByteBuffer buffer, int[] transformDataLine, int[] offSets){
+        
+                buffer.position(0);
+                for (int k = 0; k < offSets[0]; k++) {
+                    transformDataLine[k] = (int) buffer.get();
+                }
+                for (int k = offSets[0]; k < offSets[1]; k++) {
+                    transformDataLine[k] = (int) buffer.getShort();
+                }
+                for (int k = offSets[1]; k < compressedHeight; k++) {
+                    transformDataLine[k] = (int) buffer.getInt();
+                }
+    }
+    
+    /**
+     * Reads the data in the file. This method figures out by itself how the data is written. 
+     * @return The transform data contained in the wtf file.
+     * @throws IOException 
+     */
     public int[][][] readData() throws IOException {
         switch (typeOfFile) {
             case 0:
@@ -325,7 +330,7 @@ public class WTFIO {
     /**
      * An auxiliary method for the writeMixedData-method. Calculates when on the
      * line the occurs the first coefficients that are too big for byte and
-     * short data types. If no coefficient requires these data types, the
+     * short data types. If no coefficient requires one of these data types, it's
      * offsets will be the length of the data array.
      *
      * @param data A line of the compressed data.
@@ -361,13 +366,18 @@ public class WTFIO {
         return offsets;
     }
     
-    // KOKEILU BUFFERILLA:
+    /**
+     * Creates a line of mixed data.
+     * @param data The data to be written to the file.
+     * @return The data as it will written in the file.
+     */
     
     private static byte[] createLineOfMixedData(int[] data){
         
         
         int[] offSets = calculateOffsets(data);
 
+        // Calculate the length of the result array:
         int noOfBytes = offSets[0];
         int noOfShorts = offSets[1] - offSets[0];
         int noOfInts = data.length - offSets[1];
@@ -375,6 +385,7 @@ public class WTFIO {
         
         ByteBuffer buffer = ByteBuffer.allocate(length);
         
+        // Write down the offsets, the bytes, the shorts and the ints:
         for (int i = 0; i < 2; i++) {
             buffer.putInt(offSets[i]);
         }
@@ -394,65 +405,4 @@ public class WTFIO {
         return buffer.array();
     }
 
-    private static byte[] createLineOfMixedDataOriginal(int[] data) {
-
-        int[] offSets = calculateOffsets(data);
-
-        int noOfBytes = offSets[0];
-        int noOfShorts = offSets[1] - offSets[0];
-        int noOfInts = data.length - offSets[1];
-        int length = noOfBytes + 2 * noOfShorts + 4 * noOfInts;
-
-        byte[] newData = new byte[length + 8];
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                newData[4 * i + j] = (byte)  (offSets[i] >> (8*j));
-            }
-        }
-
-        int pointer = 8;
-
-        for (int i = 0; i < noOfBytes; i++) {
-            newData[pointer + i] = (byte) data[i];
-        }
-
-        pointer += noOfBytes;
-        for (int i = 0; i < noOfShorts; i++) {
-            for (int j = 0; j < 2; j++) {
-                newData[pointer + 2 * i + j] = (byte) (data[noOfBytes + i] >> (8*j));
-            }
-        }
-
-        pointer += noOfShorts;
-        for (int i = 0; i < noOfInts; i++) {
-            for (int j = 0; j < 4; j++) {
-                newData[pointer + 4 * i + j] = (byte) (data[pointer - 8 + i] >> (8*j));
-            }
-        }
-
-        return newData;
-    }
-    
-    private static byte[] transformToBytes(int[] data) {
-        byte[] b = new byte[data.length];
-        for (int i = 0; i < b.length; i++) {
-            b[i] = (byte) data[i];
-        }
-        return b;
-    }
-
-    private static short[] transformToShorts(int[] data) {
-        short[] s = new short[data.length];
-        for (int i = 0; i < s.length; i++) {
-            s[i] = (short) data[i];
-        }
-        return s;
-    }
-    
-    private static int byteToInt(byte b){
-        if (b < 0) {
-            return 256 + b;
-        }
-        return (int) b;
-    }
 }

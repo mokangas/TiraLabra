@@ -5,12 +5,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class Compression {
 
     public static void main(String[] args) throws IOException {
-        
+
 //        koe();
 
         switch (args.length) {
@@ -23,18 +22,15 @@ public class Compression {
             case 3:
                 commandLineFromBmpToWtf(args);
                 break;
+            case 4:
+                commandLineSeries(args);
+                break;
             default:
                 System.out.println("Syntax error.");
         }
     }
-    
-    public static void koe(){
-        
-      ByteBuffer buffer = ByteBuffer.allocate(8);
-      buffer.putInt(149908);
-      buffer.putInt(234723424);
-        System.out.println(buffer.getInt(0)+" : " + buffer.getInt(4));
-        
+
+    public static void koe() {
     }
 
     /**
@@ -48,18 +44,31 @@ public class Compression {
      * @throws IOException
      */
     public static void commandLineFromBmpToWtf(String[] args) throws IOException {
+        long time = System.currentTimeMillis();
         int levelOfLoss = Integer.parseInt(args[0]);
         File inputFile = new File(args[1]);
         File outputFile = new File(args[2]);
 
+        System.out.println("Reading data...");
         byte[][][] data = BitmapIO.readFileIntoByteData(inputFile);
         int originalHeight = data[0][0].length; // This hopefully lets the garbage collector destroy the data array.
+        System.out.println("Calculating transform...");
         int[][][] transform = HaarTransform.lossyTransfrom(data, levelOfLoss);
-        long time = System.currentTimeMillis();
+        System.out.println("Writing to file " + args[2] + " ...");
         WTFIO.writeMixedData(transform, originalHeight, levelOfLoss, outputFile);
 
         time = System.currentTimeMillis() - time;
-        System.out.println(time);
+        System.out.println("Ready. Duration " + time + " milliseconds.");
+    }
+
+    public static void commandLineSeries(String[] args) throws IOException {
+        int lowest = Integer.parseInt(args[0]);
+        int highest = Integer.parseInt(args[1]);
+
+        for (int i = lowest; i <= highest; i++) {
+            String[] parameters = {"" + i, args[2], args[3] + i + ".wtf"};
+            commandLineFromBmpToWtf(parameters);
+        }
     }
 
     /**
@@ -79,9 +88,19 @@ public class Compression {
         int[][][] transform = read.readData();
         int originalHeight = read.getOriginalHeight();  // This is to let garbage collector to...
         int levelOfLoss = read.getLevelOfLoss();        // ..destroy the object read.
-        byte[][][] data = HaarTransform.inverseLossy3DArray(transform, originalHeight, levelOfLoss);
+        byte[][][] data = HaarTransform.inverseLossyTransform(transform, originalHeight, levelOfLoss);
         BitmapIO.writeByteDataIntoBitmap(data, outputFile);
     }
+    
+    /**
+     * Launches the GUI.
+     */
+    private static void launchGui() {
+        GraphicalUI gui = new GraphicalUI();
+    }
+    
+    
+    
 
     // THINGS BELOW THIS ARE FOR TESTING PURPOSES AND WILL BE DELETED.
     public static boolean compareArrays(byte[] a, byte[] b) {
@@ -212,7 +231,4 @@ public class Compression {
 
     }
 
-    private static void launchGui() {
-        GraphicalUI gui = new GraphicalUI();
-    }
 }
