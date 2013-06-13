@@ -1,15 +1,17 @@
 package compression;
 
 import GUI.GraphicalUI;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class Compression {
 
     public static void main(String[] args) throws IOException {
-
+//
 //        koe();
 
         switch (args.length) {
@@ -25,12 +27,18 @@ public class Compression {
             case 4:
                 commandLineSeries(args);
                 break;
+            case 5:
+                commandLineInverseSeries(args);
+                break;
             default:
                 System.out.println("Syntax error.");
         }
     }
 
-    public static void koe() {
+    public static void koe() throws IOException {
+       
+        
+         TwoDHaar.koe();
     }
 
     /**
@@ -58,17 +66,49 @@ public class Compression {
         WTFIO.writeMixedData(transform, originalHeight, levelOfLoss, outputFile);
 
         time = System.currentTimeMillis() - time;
-        System.out.println("Ready. Duration " + time + " milliseconds.");
+        System.out.println("Ready. Took " + time + " milliseconds.");
     }
 
     public static void commandLineSeries(String[] args) throws IOException {
+        long time = System.currentTimeMillis();
         int lowest = Integer.parseInt(args[0]);
         int highest = Integer.parseInt(args[1]);
-
+        String objectName = args[3].trim();
+        
+        System.out.println("Reading data...");
+        byte[][][] data = BitmapIO.readFileIntoByteData(new File(args[2].trim()));
+        int origHeight = data[0][0].length;
+        
         for (int i = lowest; i <= highest; i++) {
-            String[] parameters = {"" + i, args[2], args[3] + i + ".wtf"};
-            commandLineFromBmpToWtf(parameters);
+            System.out.println("Calculating transform, lol = "+i+"...");
+            int[][][] transform = HaarTransform.lossyTransfrom(data, i);
+            System.out.println("Writing file "+objectName+i+".wtf...");
+            WTFIO.writeMixedData(transform, origHeight, i, new File(objectName+i+".wtf"));
         }
+       
+        time = System.currentTimeMillis() - time;
+        System.out.println("Ready. Took " + time + " milliseconds.");
+    }
+    
+    public static void commandLineInverseSeries(String args[]) throws FileNotFoundException, IOException{
+        long time = System.currentTimeMillis();
+        int lowest = Integer.parseInt(args[1]);
+        int highest = Integer.parseInt(args[2]);
+        String protoInput = args[3].trim();
+        String protoOutput = args[4].trim();
+        
+        for (int i = lowest; i < highest; i++) {
+            System.out.println("Reading file "+protoInput+i+"wtf...");
+            WTFIO pic = new WTFIO(new File(protoInput+i+".wtf"));
+            int[][][] transform = pic.readData();
+            System.out.println("Retrieving image data...");
+            byte[][][] data = HaarTransform.inverseLossyTransform(transform, pic.getOriginalHeight(), pic.getLevelOfLoss());
+            System.out.println("Writing file "+protoOutput+i+".bmp...");
+            BitmapIO.writeByteDataIntoBitmap(data, new File(protoOutput+i+".bmp"));
+        }
+        
+        time = System.currentTimeMillis() - time;
+        System.out.println("Ready. Took " + time + " milliseconds.");
     }
 
     /**
@@ -81,15 +121,22 @@ public class Compression {
      * @throws IOException
      */
     public static void commandLineFromWtfToBmp(String[] args) throws FileNotFoundException, IOException {
+        long time = System.currentTimeMillis();
         File inputFile = new File(args[0]);
         File outputFile = new File(args[1]);
 
+        System.out.println("Reading file "+args[0]+" ...");
         WTFIO read = new WTFIO(inputFile);
         int[][][] transform = read.readData();
         int originalHeight = read.getOriginalHeight();  // This is to let garbage collector to...
         int levelOfLoss = read.getLevelOfLoss();        // ..destroy the object read.
+        System.out.println("Retrieving image data...");
         byte[][][] data = HaarTransform.inverseLossyTransform(transform, originalHeight, levelOfLoss);
+        System.out.println("Writing file "+args[1]);
         BitmapIO.writeByteDataIntoBitmap(data, outputFile);
+        
+        time = System.currentTimeMillis() - time;
+        System.out.println("Ready. Took " + time + " milliseconds.");
     }
     
     /**

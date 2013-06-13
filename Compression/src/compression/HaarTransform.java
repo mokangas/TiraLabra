@@ -24,6 +24,14 @@ public class HaarTransform {
      */
     public static int[] sumTree(byte[] data, int leafSize){
         
+        if (leafSize > data.length) {
+            int[] sumTree = {0};
+            for (int i = 0; i < data.length; i++) {
+                sumTree[0] += data.length;
+            }
+            return sumTree;
+        }
+        
         int leaves = data.length / leafSize;
         int[] tree = new int[2*leaves -1];
         
