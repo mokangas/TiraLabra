@@ -288,8 +288,7 @@ public class WTFIO {
         
         return buffer;
     }
-    
-    
+   
     /**
      * Decodesa line of raw mixed data to the approprite data types.
      * @param buffer The ByteBuffer where the raw data is stored.
@@ -336,7 +335,7 @@ public class WTFIO {
      * @param data A line of the compressed data.
      * @return The offsets of shorts and integers respectively.
      */
-    private static int[] calculateOffsets(int[] data) {
+    public static int[] calculateOffsets(int[] data) {
 
         int[] offsets = new int[2];
         offsets[0] = data.length;
@@ -367,12 +366,12 @@ public class WTFIO {
     }
     
     /**
-     * Creates a line of mixed data.
+     * Creates a line of mixed data complete with the offsets.
      * @param data The data to be written to the file.
      * @return The data as it will written in the file.
      */
     
-    private static byte[] createLineOfMixedData(int[] data){
+    public static byte[] createLineOfMixedData(int[] data){
         
         
         int[] offSets = calculateOffsets(data);

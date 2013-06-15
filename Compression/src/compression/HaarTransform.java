@@ -24,7 +24,12 @@ public class HaarTransform {
      */
     public static int[] sumTree(byte[] data, int leafSize){
         
-        if (leafSize > data.length) {
+        if (supPowerOfTwo(data.length) != data.length) {
+            throw new IllegalArgumentException();
+        }
+        
+        // Only one leaf
+        if (leafSize >= data.length) {
             int[] sumTree = {0};
             for (int i = 0; i < data.length; i++) {
                 sumTree[0] += data.length;
@@ -32,6 +37,7 @@ public class HaarTransform {
             return sumTree;
         }
         
+        // Other cases:
         int leaves = data.length / leafSize;
         int[] tree = new int[2*leaves -1];
         
@@ -54,6 +60,13 @@ public class HaarTransform {
         return tree;
     }
  
+    /**
+     * Performs a transform on an array whose length is some power of two.
+     * @param data The data to which the transform is performed on.
+     * @param levelOfLoss How many levels of coefficients will be omitted in the
+     * transform.
+     * @return The transform.
+     */
     public static int[] lossyTransformPowerOfTwo(byte[] data, int levelOfLoss){
         
         int[] sumTree = sumTree(data, pow(2,levelOfLoss));
@@ -103,7 +116,8 @@ public class HaarTransform {
 
         // If the last number is not transformed, it is copied:
         if (remainingSize == 1) {
-            transform[transform.length - 1] = data[data.length - 1];
+            int[] lastPixel = {data[data.length - 1]};
+            transform = joinArrays(transform, lastPixel);
         }
 
         return transform;
@@ -150,33 +164,6 @@ public class HaarTransform {
             d[i] = (byte) ((data[i] + addThis) / divideByThis);
         }
         return d;
-    }
-
-    /**
-     * Retrieves the (approximate) original data from a lossy transform. It is
-     * assumed that the transform is of the form produced by the method lossyTransform.
-     * 
-     * @param transform The transform to be inverted.
-     * @param originalHeight The height of the original picture, or more generally the length
-     * of the compressed line before the compression.
-     * @param levelOfLoss How many levels of coefficients were lost in the transform.
-     * @return The (approximate) original data.
-     */
-    public static byte[][][] inverseLossyTransform(int[][][] transform, int originalHeight, int levelOfLoss) {
-
-        int dim0 = transform.length;
-        int dim1 = transform[0].length;
-        int dim2 = originalHeight; // This isn't evident from the size of transform[0][0].
-        byte[][][] inverse = new byte[dim0][dim1][dim2];
-
-        for (int i = 0; i < dim0; i++) {
-            for (int j = 0; j < dim1; j++) {
-                inverse[i][j] = inverseLossyArbitraryLength(transform[i][j], originalHeight, levelOfLoss);
-            }
-        }
-
-        return inverse;
-
     }
 
     /**
@@ -236,9 +223,12 @@ public class HaarTransform {
         int readPointer = 0; // Points to the data that is read.
         int writePointer = 0; // Points to the place where next data will be written.
 
+        // This is similar to the transform of the arbitrary length: split into right subarrays and do the
+        // inverse transform to each of them.
         while (remainingSize > 1) {
             int keptSize = Math.max(1, subSize / pow(2, levelOfLoss)); // Tells how much of the original data was kept
-            byte[] partialInverse = inverseLossyPowerOfTwo(Arrays.copyOfRange(transform, readPointer, readPointer + keptSize), levelOfLoss);
+            int[] partialTransform = Arrays.copyOfRange(transform, readPointer, readPointer + keptSize);
+            byte[] partialInverse = inverseLossyPowerOfTwo(partialTransform, levelOfLoss);
             copyValuesTo(partialInverse, inverse, writePointer);
             readPointer += keptSize;
             writePointer += subSize;
@@ -254,14 +244,45 @@ public class HaarTransform {
     }
     
     /**
+     * Retrieves the (approximate) original data from a lossy transform. It is
+     * assumed that the transform is of the form produced by the method lossyTransform.
+     * 
+     * @param transform The transform to be inverted.
+     * @param originalHeight The height of the original picture, or more generally the length
+     * of the compressed line before the compression.
+     * @param levelOfLoss How many levels of coefficients were lost in the transform.
+     * @return The (approximate) original data.
+     */
+    public static byte[][][] inverseLossyTransform(int[][][] transform, int originalHeight, int levelOfLoss) {
+
+        int dim0 = transform.length;
+        int dim1 = transform[0].length;
+        int dim2 = originalHeight; // This isn't evident from the size of transform[0][0].
+        byte[][][] inverse = new byte[dim0][dim1][dim2];
+
+        for (int i = 0; i < dim0; i++) {
+            for (int j = 0; j < dim1; j++) {
+                inverse[i][j] = inverseLossyArbitraryLength(transform[i][j], originalHeight, levelOfLoss);
+            }
+        }
+
+        return inverse;
+
+    }
+    
+    /**
      * An auxiliary method that raises an integer to the power of another. 
-     * The power must be nonnegative.
+     * The power must be 0,1,2,...,21. 
      *
      * @param theNumber The number whose power will be calculated
-     * @param power The power to which theNumber will be raised.
+     * @param power The power to which theNumber will be raised, only values 0,1,...,21
+     * are accepted.
      * @return The result: theNumber^power.
      */
     public static int pow(int theNumber, int power) {
+        if (power < 0 || power > 20) {
+            throw new IllegalArgumentException();
+        }
         int result = 1;
         for (int i = 0; i < power; i++) {
             result *= theNumber;
@@ -287,33 +308,14 @@ public class HaarTransform {
         int length = array1.length + array2.length;
         int[] joined = new int[length];
         
-        // An altervative way, takes as long as the currently used.
-//        for (int i = 0; i < array1.length; i++) {
-//            joined[i] = array1[i];
-//        }
-//        for (int i = 0; i < array2.length; i++) {
-//            joined[array1.length + i] = array2[i];
-//        }
-        
-        System.arraycopy(array1, 0, joined, 0, array1.length);
-        System.arraycopy(array2, 0, joined, array1.length, array2.length);
-        
+        for (int i = 0; i < array1.length; i++) {
+            joined[i] = array1[i];
+        }
+        for (int i = 0; i < array2.length; i++) {
+            joined[array1.length + i] = array2[i];
+        }
         
         return joined;
-    }
-
-     /**
-     * An auxiliary method that copies an array of integers into another array.
-     *
-     * @param copyThese The array whose values will be copied to the other one.
-     * @param copyHere The array where they will be copied.
-     * @param startingIndex The first index of the object array that is written
-     * on.
-     */
-    public static void copyValuesTo(int[] copyThese, int[] copyHere, int startingIndex) {
-        for (int i = 0; i < copyThese.length; i++) {
-            copyHere[startingIndex + i] = copyThese[i];
-        }
     }
 
     /**
@@ -333,7 +335,7 @@ public class HaarTransform {
     /**
      * Returns the greatest number that is a power of two and less than n.
      *
-     * @param n A nonnegative integer.
+     * @param n A positive integer.
      * @return sup{ 2^k : 2^k <= n}.
      */
     public static int supPowerOfTwo(int n) {
