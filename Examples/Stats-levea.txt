@@ -1,0 +1,25 @@
+Transform with lol = 0 - 20 performed on the image levea.bmp
+=====================================================================================================
+Reading data took 4569 milliseconds. Original file size 36744 kb. Dimensions 8000 x 1531 (width x height)
+=====================================================================================================
+lol 	wtf size	Transform 	Writing wtf	reading wtf 	inverse transform 	writing bmp
+0	63163 kb.	1659 ms.	840 ms.		1608 ms.	1628 ms.		2158 ms.	
+1	34809 kb.	1251 ms.	524 ms.		396 ms.		1359 ms.		1906 ms.	
+2	18222 kb.	599 ms.		174 ms.		284 ms.		1168 ms.		2384 ms.	
+3	9484 kb.	387 ms.		119 ms.		227 ms.		1019 ms.		1945 ms.	
+4	5007 kb.	1088 ms.	92 ms.		177 ms.		901 ms.			1940 ms.	
+5	2755 kb.	996 ms.		78 ms.		177 ms.		825 ms.			1929 ms.	
+6	1635 kb.	240 ms.		71 ms.		162 ms.		769 ms.			1925 ms.	
+7	1087 kb.	991 ms.		66 ms.		156 ms.		670 ms.			1924 ms.	
+8	1164 kb.	185 ms.		66 ms.		163 ms.		516 ms.			1939 ms.	
+9	1068 kb.	215 ms.		64 ms.		155 ms.		516 ms.			1928 ms.	
+10	1056 kb.	873 ms.		63 ms.		155 ms.		64 ms.			1947 ms.	
+11	1056 kb.	935 ms.		64 ms.		156 ms.		60 ms.			1932 ms.	
+12	1056 kb.	907 ms.		64 ms.		155 ms.		52 ms.			1935 ms.	
+13	1056 kb.	158 ms.		64 ms.		150 ms.		47 ms.			1895 ms.	
+14	1056 kb.	886 ms.		61 ms.		155 ms.		43 ms.			1919 ms.	
+15	1056 kb.	180 ms.		63 ms.		157 ms.		62 ms.			1961 ms.	
+16	1056 kb.	187 ms.		105 ms.		158 ms.		70 ms.			1945 ms.	
+17	1056 kb.	166 ms.		63 ms.		150 ms.		63 ms.			1945 ms.	
+18	1056 kb.	889 ms.		66 ms.		156 ms.		58 ms.			1933 ms.	
+19	1056 kb.	156 ms.		64 ms.		156 ms.		52 ms.			1927 ms.	

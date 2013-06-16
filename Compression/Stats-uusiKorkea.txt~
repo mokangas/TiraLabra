@@ -1,0 +1,25 @@
+Transform with lol = 0 - 20 performed on the image uusiKorkea.bmp
+=====================================================================================================
+Reading data took 2435 milliseconds. Original file size 18825 kb. Dimensions 1531 x 4096 (width x height)
+=====================================================================================================
+lol 	wtf size	Transform 	Writing wtf	reading wtf 	inverse transform 	writing bmp
+0	28979 kb.	516 ms.		258 ms.		444 ms.		874 ms.		1622 ms.	
+1	16499 kb.	212 ms.		155 ms.		159 ms.		727 ms.		1494 ms.	
+2	8805 kb.	141 ms.		83 ms.		113 ms.		612 ms.		1071 ms.	
+3	4571 kb.	127 ms.		49 ms.		65 ms.		555 ms.		1048 ms.	
+4	2346 kb.	117 ms.		31 ms.		46 ms.		527 ms.		1018 ms.	
+5	1210 kb.	82 ms.		23 ms.		39 ms.		513 ms.		1069 ms.	
+6	636 kb.	108 ms.		19 ms.		34 ms.		468 ms.		999 ms.	
+7	345 kb.	86 ms.		16 ms.		32 ms.		447 ms.		1044 ms.	
+8	199 kb.	102 ms.		15 ms.		30 ms.		428 ms.		994 ms.	
+9	126 kb.	76 ms.		13 ms.		27 ms.		407 ms.		1045 ms.	
+10	87 kb.	71 ms.		14 ms.		29 ms.		385 ms.		1021 ms.	
+11	66 kb.	96 ms.		13 ms.		27 ms.		371 ms.		1045 ms.	
+12	55 kb.	41 ms.		13 ms.		30 ms.		26 ms.		1000 ms.	
+13	55 kb.	50 ms.		13 ms.		29 ms.		13 ms.		1033 ms.	
+14	55 kb.	63 ms.		13 ms.		27 ms.		12 ms.		1008 ms.	
+15	55 kb.	58 ms.		13 ms.		26 ms.		14 ms.		1034 ms.	
+16	55 kb.	41 ms.		13 ms.		30 ms.		22 ms.		1002 ms.	
+17	55 kb.	40 ms.		13 ms.		30 ms.		24 ms.		1027 ms.	
+18	55 kb.	61 ms.		14 ms.		29 ms.		13 ms.		995 ms.	
+19	55 kb.	43 ms.		20 ms.		30 ms.		13 ms.		1027 ms.	

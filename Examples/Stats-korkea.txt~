@@ -1,0 +1,25 @@
+Transform with lol = 0 - 20 performed on the image korkea.bmp
+=====================================================================================================
+Reading data took 4886 milliseconds. Original file size 36768 kb. Dimensions 1531 x 8000 (width x height)
+=====================================================================================================
+lol 	wtf size	Transform 	Writing wtf	reading wtf 	inverse transform 	writing bmp
+0	99306 kb.	1336 ms.		2162 ms.		1557 ms.		1673 ms.		2326 ms.	
+1	51663 kb.	766 ms.		401 ms.		1025 ms.		1469 ms.		2149 ms.	
+2	26387 kb.	544 ms.		125 ms.		176 ms.		1177 ms.		2752 ms.	
+3	13362 kb.	328 ms.		70 ms.		116 ms.		1099 ms.		2266 ms.	
+4	6742 kb.	940 ms.		42 ms.		71 ms.		973 ms.		2220 ms.	
+5	3408 kb.	570 ms.		27 ms.		45 ms.		929 ms.		2012 ms.	
+6	1735 kb.	185 ms.		22 ms.		37 ms.		854 ms.		2015 ms.	
+7	904 kb.	868 ms.		16 ms.		33 ms.		837 ms.		2014 ms.	
+8	488 kb.	166 ms.		14 ms.		34 ms.		765 ms.		1995 ms.	
+9	289 kb.	181 ms.		13 ms.		31 ms.		706 ms.		1987 ms.	
+10	197 kb.	349 ms.		13 ms.		30 ms.		596 ms.		1989 ms.	
+11	158 kb.	156 ms.		12 ms.		30 ms.		424 ms.		1984 ms.	
+12	146 kb.	128 ms.		12 ms.		31 ms.		48 ms.		1994 ms.	
+13	146 kb.	134 ms.		12 ms.		29 ms.		28 ms.		2001 ms.	
+14	146 kb.	127 ms.		12 ms.		31 ms.		42 ms.		1987 ms.	
+15	146 kb.	129 ms.		12 ms.		29 ms.		45 ms.		1999 ms.	
+16	146 kb.	141 ms.		12 ms.		29 ms.		45 ms.		1946 ms.	
+17	146 kb.	145 ms.		13 ms.		29 ms.		45 ms.		2026 ms.	
+18	146 kb.	152 ms.		86 ms.		29 ms.		46 ms.		1992 ms.	
+19	146 kb.	155 ms.		12 ms.		29 ms.		27 ms.		2005 ms.	

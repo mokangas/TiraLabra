@@ -1,0 +1,25 @@
+Transform with lol = 0 - 20 performed on the image nuutti-1.bmp
+=====================================================================================================
+Reading data took 1208 milliseconds. Original file size 9432 kb. Dimensions 1536 x 2047 (width x height)
+=====================================================================================================
+lol 	wtf size	Transform 	Writing wtf	reading wtf 	inverse transform 	writing bmp
+0	23567 kb.	450 ms.		160 ms.		179 ms.		428 ms.		803 ms.	
+1	12082 kb.	194 ms.		67 ms.		92 ms.		336 ms.		529 ms.	
+2	6348 kb.	158 ms.		42 ms.		63 ms.		274 ms.		465 ms.	
+3	3490 kb.	96 ms.		30 ms.		47 ms.		234 ms.		478 ms.	
+4	1820 kb.	57 ms.		22 ms.		38 ms.		227 ms.		473 ms.	
+5	981 kb.	47 ms.		17 ms.		34 ms.		202 ms.		472 ms.	
+6	569 kb.	42 ms.		15 ms.		32 ms.		194 ms.		449 ms.	
+7	371 kb.	45 ms.		14 ms.		30 ms.		168 ms.		470 ms.	
+8	286 kb.	37 ms.		14 ms.		30 ms.		142 ms.		470 ms.	
+9	251 kb.	33 ms.		13 ms.		30 ms.		102 ms.		463 ms.	
+10	239 kb.	31 ms.		14 ms.		30 ms.		9 ms.		466 ms.	
+11	239 kb.	27 ms.		13 ms.		29 ms.		10 ms.		470 ms.	
+12	239 kb.	26 ms.		14 ms.		30 ms.		9 ms.		471 ms.	
+13	239 kb.	27 ms.		14 ms.		29 ms.		10 ms.		486 ms.	
+14	239 kb.	37 ms.		14 ms.		30 ms.		10 ms.		468 ms.	
+15	239 kb.	26 ms.		14 ms.		30 ms.		10 ms.		468 ms.	
+16	239 kb.	27 ms.		13 ms.		30 ms.		10 ms.		467 ms.	
+17	239 kb.	27 ms.		13 ms.		30 ms.		10 ms.		472 ms.	
+18	239 kb.	27 ms.		14 ms.		30 ms.		18 ms.		452 ms.	
+19	239 kb.	42 ms.		14 ms.		31 ms.		10 ms.		468 ms.	

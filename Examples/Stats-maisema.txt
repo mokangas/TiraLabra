@@ -1,0 +1,25 @@
+Transform with lol = 0 - 20 performed on the image maisema.bmp
+=====================================================================================================
+Reading data took 3044 milliseconds. Original file size 23887 kb. Dimensions 3456 x 2304 (width x height)
+=====================================================================================================
+lol 	wtf size	Transform 	Writing wtf	reading wtf 	inverse transform 	writing bmp
+0	39143 kb.	703 ms.		311 ms.		1416 ms.	1048 ms.		1564 ms.	
+1	23209 kb.	374 ms.		164 ms.		254 ms.		915 ms.			1292 ms.	
+2	12586 kb.	214 ms.		102 ms.		175 ms.		724 ms.			1298 ms.	
+3	6427 kb.	182 ms.		169 ms.		112 ms.		653 ms.			1279 ms.	
+4	3306 kb.	156 ms.		46 ms.		88 ms.		612 ms.			1212 ms.	
+5	1745 kb.	133 ms.		36 ms.		78 ms.		579 ms.			1258 ms.	
+6	981 kb.		143 ms.		33 ms.		73 ms.		552 ms.			1221 ms.	
+7	581 kb.		101 ms.		28 ms.		70 ms.		533 ms.			1256 ms.	
+8	376 kb.		131 ms.		28 ms.		62 ms.		460 ms.			1211 ms.	
+9	283 kb.		104 ms.		26 ms.		67 ms.		440 ms.			1261 ms.	
+10	207 kb.		111 ms.		27 ms.		66 ms.		424 ms.			1203 ms.	
+11	165 kb.		62 ms.		26 ms.		66 ms.		32 ms.			1261 ms.	
+12	165 kb.		86 ms.		26 ms.		66 ms.		19 ms.			1214 ms.	
+13	165 kb.		58 ms.		26 ms.		61 ms.		24 ms.			1249 ms.	
+14	165 kb.		78 ms.		25 ms.		63 ms.		18 ms.			1210 ms.	
+15	165 kb.		65 ms.		26 ms.		62 ms.		32 ms.			1235 ms.	
+16	165 kb.		93 ms.		25 ms.		68 ms.		18 ms.			1206 ms.	
+17	165 kb.		83 ms.		26 ms.		67 ms.		30 ms.			1261 ms.	
+18	165 kb.		88 ms.		26 ms.		65 ms.		18 ms.			1201 ms.	
+19	165 kb.		67 ms.		25 ms.		63 ms.		26 ms.			1253 ms.	
